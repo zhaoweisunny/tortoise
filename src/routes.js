@@ -9,10 +9,12 @@
 import App from './App'
 const Bar = { template: '<div>bar</div>' }
 const Test = { template: '<div>Test</div>' }
+const New = { template: '<div>New</div>' }
 
 export default [
   { path: '/foo', component: App },
   { path: '/bar', component: Bar },
-  { path: '/test/:id', component: Test }
+  { path: '/test/:id', component: Test },
+  { path: '/new', component: New }
 ]
 

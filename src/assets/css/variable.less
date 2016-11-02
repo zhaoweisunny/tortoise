@@ -1,0 +1,41 @@
+@mainColor01: #1693f7; /**主颜色01**/
+@mainColor02: #78be19; /*主颜色01*/
+@mainColor03: #4abfb1; /*主颜色01*/
+
+@white: #FFF;
+@black: #000;
+@red: #BB4F4F; /*红色*/
+@yellow: #F7B537; /*黄色*/
+@blue: #1d44a6; /*蓝色*/
+@orange: #ef5a0a; /*橙色*/
+
+@green: #6ABB4F; /*绿色*/
+@greenDarken: #85A440; /*深绿色*/
+@greenLighten: #44BBAA; /*亮绿色ABC46B*/
+
+@grey: #A8B5CF; /*灰色*/
+@greyDarken: #444; /*浅灰色*/
+@greyLighten: #E4E8F0; /*浅灰色*/
+
+@textColor: #5f666f; /*文本色*/
+@borderColor: #d9d9d9; /*边框颜色*/
+@bodyBg: #E8EBED; /*body背景颜色*/
+@boxBg: #FFF; /*框颜色*/
+@PromptBg: #84888B; /*提示框颜色*/
+@border: 1px solid @borderColor;
+@testBorder: 1px solid @red;
+@tableBorderColor: #eee;
+@YaHei: "微软雅黑";
+/*class==================================================*/
+.opacity(@opacity: 0.7) {
+  @opacityPercentage: @opacity * 100;
+  opacity: @opacity;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=@opacityPercentage);
+  filter: alpha(opacity=@opacityPercentage);
+}
+
+.linear-gradient(@linearColor1:'#205c82',@linearColor2:'#2977be',@linearColor3:'#0d2957') {
+  background-image: -webkit-linear-gradient(top, @linearColor1 0%, @linearColor2 60%, @linearColor3 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}

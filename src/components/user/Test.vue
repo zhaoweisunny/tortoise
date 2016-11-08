@@ -12,7 +12,7 @@
     name: 'Test',
     data () {
       return {
-        msg: 'hello'
+        msg: 'helloTestVue'
       }
     }
   }

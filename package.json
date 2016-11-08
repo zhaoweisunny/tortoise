@@ -1,8 +1,8 @@
 {
   "name": "vue",
   "version": "1.0.0",
-  "description": "fuck",
-  "author": "szw",
+  "description": "helloVue",
+  "author": "mengyao",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

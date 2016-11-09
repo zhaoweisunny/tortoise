@@ -1,26 +1,29 @@
 /**
-* Created by Administrator on 2016/11/1.
+* Created by Administrator on 2016/11/9.
 */
+
 <template>
-  <div class="New">
-    {{msg}}
+  <div class="index">
+    {{ msg }}
   </div>
 </template>
+
 <script>
   export default {
-    name: 'New',
+    name: 'index',
     data () {
       return {
-        msg: '这里是New模块'
+        msg: 'IndexVueContent'
       }
     }
   }
 </script>
+
+
 <style rel="stylesheet/less" type="text/css">
   @import "../../assets/css/variable.less";
 
-  .New {
+  .index {
 
   }
 </style>
-

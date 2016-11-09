@@ -4,17 +4,20 @@
 
 <template>
   <div class="Test">
-{{msg}}
+    <h1>{{msg}}</h1>
+    引入new模块：<new></new>
   </div>
 </template>
 <script>
+  import New from './New'
   export default {
     name: 'Test',
     data () {
       return {
-        msg: 'helloTestVue'
+        msg: '这里是Test模块'
       }
-    }
+    },
+    components: {New}
   }
 </script>
 

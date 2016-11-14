@@ -8,10 +8,8 @@
 // 或者，只是一个组件配置对象。
 // import App from './App'
 // 导入vue模块
-import Hello from './components/user/Hello'
-import Test from './components/user/Test'
+import Login from './components/user/Login'
 export default [
-  { path: '/hello', component: Hello },
-  { path: '/test', component: Test }
+  { path: '/', component: Login }
 ]
 

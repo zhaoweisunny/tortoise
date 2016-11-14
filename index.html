@@ -5,15 +5,11 @@
     <title>vue</title>
   </head>
   <body>
-    <h1>welcome to indexPage</h1>
     <div id="app">
-      <p>
-        <!-- 使用 router-link 组件来导航. -->
-        <!-- 通过传入 `to` 属性指定链接. -->
-        <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
-        <router-link to="/hello">helloPage</router-link><br>
-        <router-link to="/test">testPage</router-link><br>
-      </p>
+      <!-- 使用 router-link 组件来导航. -->
+      <!-- 通过传入 `to` 属性指定链接. -->
+      <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+      <router-link to="/"></router-link>
       <!-- 路由出口 -->
       <!-- 路由匹配到的组件将渲染在这里 -->
       <router-view>
@@ -22,13 +18,4 @@
     </div>
     <!-- built files will be auto injected -->
   </body>
-<script>
-  import Vue from 'vue'
-  import App from './src/App'
-  new Vue({
-    el: '#app',
-    template: '<App/>',
-    components: { App }
-  })
-</script>
 </html>

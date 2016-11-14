@@ -5,15 +5,15 @@
 <template>
   <div class="login">
     <div class="loginContent">
-      <!--<img src="../../assets/images/login1.png" alt=""/>-->
+      <img src="../../assets/images/login1.png" alt=""/>
       <div class="loginBox">
         <h1>贵阳公交后台管理系统</h1>
         <div class="inputBox clear">
-          <!--<img class="userName pull-left" src="../../assets/images/user.png" width="30" alt=""/>-->
+          <img class="userName pull-left" src="../../assets/images/user.png" width="30" alt=""/>
           <input type="text" value="admin" class="inputText pull-right userInput" placeholder="请输入用户名"/>
         </div>
         <div class="inputBox clear">
-          <!--<img class="userName pull-left" src="../../assets/images/password.png" width="30" alt=""/>-->
+          <img class="userName pull-left" src="../../assets/images/password.png" width="30" alt=""/>
           <input type="password"  class="inputText pull-right pwdInput" placeholder="请输入密码"/>
         </div>
         <span class="loginBtn">登录</span>
@@ -34,8 +34,9 @@
 </script>
 
 
-<style rel="stylesheet/less" type="text/css">
+<style lang="less" rel="stylesheet/less" type="text/css">
   @import "../../assets/css/global.less";
+  @import "../../assets/css/variable.less";
   .login {
     width: 100%; height: 100%; background-color: #fff; display: table; text-align: center;
     .loginContent{

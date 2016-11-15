@@ -14,9 +14,9 @@
         </div>
         <div class="inputBox clear">
           <img class="userName pull-left" src="../../assets/images/password.png" width="30" alt=""/>
-          <input type="password" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
+          <input v-model="pwd" type="password" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
         </div>
-        <span class="loginBtn">登录</span>
+        <span class="loginBtn" @click="login">登录</span>
       </div>
     </div>
   </div>
@@ -27,23 +27,50 @@
     name: 'login',
     data () {
       return {
-        name: 'zw',
-        pw: ''
+        name: 'admin',
+        pwd: ''
       }
     },
-    mounted () {
-      var _this = this
-      this.$http.post('rest/login', {name: _this.name, pw: _this.pw}).then((response) = > {
+    methods: {
+      login: function () {
+        let that = this
         debugger
-          this.$set('json', response)
-      }, (response) =
-    >
-      {
-        console.log('fail' + response)
+        that.$http({
+          url: 'login',
+          method: 'post',
+          data: {
+            name: that.name,
+            pwd: that.pwd
+          }
+        }).then(
+          (response) => {
+            that.$set('json', response)
+            console.log(response)
+          },
+          (response) => {
+            console.log('fail' + response)
+          }
+        )
       }
-    )
     }
   }
+
+//    mounted () {
+
+//      this.$http.jsonp({
+//        url: '',
+//        method: 'POST',
+//        enulateJSON: true,
+//        data: {
+//          name: this.name,
+//          pwd: this.pwd
+//        }
+//      }).then(function (response) {
+//        console.log(response.data)
+//      }, function (response) {
+//      })
+//    }
+
 </script>
 
 

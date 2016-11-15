@@ -16,7 +16,7 @@
           <img class="userName pull-left" src="../../assets/images/password.png" width="30" alt=""/>
           <input v-model="pwd" type="password" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
         </div>
-        <span class="loginBtn" @click="login">登录</span>
+        <span class="loginBtn" @click="login" >登录</span>
       </div>
     </div>
   </div>
@@ -34,17 +34,18 @@
     methods: {
       login: function () {
         let that = this
-        debugger
-        that.$http({
-          url: 'login',
-          method: 'post',
-          data: {
+        if (this.name === '' || this.pwd === '') {
+          console.log('用户名或密码不能为空')
+          return
+        }
+        this.$http.post('alarmcenter/back/user/login',
+          {
             name: that.name,
-            pwd: that.pwd
+            pwd: that.pw
           }
-        }).then(
+        ).then(
           (response) => {
-            that.$set('json', response)
+            this.$set('json', response)
             console.log(response)
           },
           (response) => {
@@ -53,6 +54,25 @@
         )
       }
     }
+//    mounted () {
+//      let that = this
+//      this.$http({
+//        url: 'login',
+//        method: 'post',
+//        data: {
+//          name: that.name,
+//          pwd: that.pwd
+//        }
+//      }).then(
+//      (response) => {
+//        that.$set('json', response)
+//        console.log(response)
+//      },
+//      (response) => {
+//        console.log('fail' + response)
+//      }
+//    )
+//    }
   }
 
 //    mounted () {

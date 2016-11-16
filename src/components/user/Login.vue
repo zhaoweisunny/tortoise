@@ -35,18 +35,18 @@
     methods: {
       login: function () {
         let that = this
+        debugger
         if (that.userName === '' || that.password === '') {
           console.log('用户名或密码不能为空')
           return
         }
-        this.$router.go({name: 'test'})
         this.$http.post('/alarmcenter/back/user/login', {
           userName: that.userName, password: md5(that.password)
         }).then(
           (response) => {
-            that.$router.go({name: 'test'})
+            that.$router.go('/test')
             if (response.body.code === 200) {
-              console.log(that)
+              that.$router.push({name: 'test'})
             }
           },
           (response) => {

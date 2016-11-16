@@ -22,11 +22,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/back': {
-        target: '192.168.0.180:8080/alarmcenter/back',
+      '/alarmcenter': {
+        target: 'http://192.168.0.180:8080',
         changeOrigin: true,
         pathRewrite: {
-          '/^login': 'login'
+          '/^alarmcenter': '/alarmcenter'
         }
       }
     },

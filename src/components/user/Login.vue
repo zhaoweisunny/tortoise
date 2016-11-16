@@ -10,11 +10,11 @@
         <h1>贵阳公交后台管理系统</h1>
         <div class="inputBox clear">
           <img class="userName pull-left" src="../../assets/images/user.png" width="30" alt=""/>
-          <input v-model="name" type="text" class="inputText pull-right userInput" placeholder="请输入用户名"/>
+          <input v-model="userName" type="text" class="inputText pull-right userInput" placeholder="请输入用户名"/>
         </div>
         <div class="inputBox clear">
           <img class="userName pull-left" src="../../assets/images/password.png" width="30" alt=""/>
-          <input v-model="pwd" type="password" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
+          <input v-model="password" type="password" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
         </div>
         <span class="loginBtn" @click="login" >登录</span>
       </div>
@@ -23,30 +23,31 @@
 </template>
 
 <script>
+  import md5 from 'md5'
   export default {
     name: 'login',
     data () {
       return {
-        name: 'admin',
-        pwd: ''
+        userName: 'admin',
+        password: ''
       }
     },
     methods: {
       login: function () {
         let that = this
-        if (this.name === '' || this.pwd === '') {
+        if (that.userName === '' || that.password === '') {
           console.log('用户名或密码不能为空')
           return
         }
-        this.$http.post('alarmcenter/back/user/login',
-          {
-            name: that.name,
-            pwd: that.pw
-          }
-        ).then(
+        this.$router.go({name: 'test'})
+        this.$http.post('/alarmcenter/back/user/login', {
+          userName: that.userName, password: md5(that.password)
+        }).then(
           (response) => {
-            this.$set('json', response)
-            console.log(response)
+            that.$router.go({name: 'test'})
+            if (response.body.code === 200) {
+              console.log(that)
+            }
           },
           (response) => {
             console.log('fail' + response)

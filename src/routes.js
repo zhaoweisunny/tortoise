@@ -10,7 +10,9 @@
 // 导入vue模块
 
 import Login from './components/user/Login'
+import Test from './components/user/Test'
 export default [
-  { path: '/', component: Login }
+  { path: '/', name: 'login', component: Login },
+  { path: '/test', name: 'test', component: Test }
 ]
 

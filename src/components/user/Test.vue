@@ -4,6 +4,7 @@
 
 <template>
   <div class="Test">
+    gdfgdfg
     <h1>{{msg}}</h1>
     引入new模块：<new></new>
   </div>

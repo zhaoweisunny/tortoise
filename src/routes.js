@@ -10,9 +10,13 @@
 // 导入vue模块
 
 import Login from './components/user/Login'
+import Welcome from './components/user/Welcome'
+import Main from './components/user/Main'
 import Test from './components/user/Test'
 export default [
   { path: '/', name: 'login', component: Login },
-  { path: '/test', name: 'test', component: Test }
+  { path: '/welcome', name: 'welcome', component: Welcome },
+  { path: '/main', name: 'main', component: Main },
+  { path: '/', name: 'test', component: Test }
 ]
 

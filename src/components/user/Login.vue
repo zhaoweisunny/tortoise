@@ -14,7 +14,7 @@
         </div>
         <div class="inputBox clear">
           <img class="userName pull-left" src="../../assets/images/password.png" width="30" alt=""/>
-          <input v-model="password" type="password" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
+          <input v-model="password" type="password" @keydown.enter="login" class="inputText pull-right pwdInput" placeholder="请输入密码"/>
         </div>
         <span class="loginBtn" @click="login" >登录</span>
       </div>
@@ -35,7 +35,6 @@
     methods: {
       login: function () {
         let that = this
-        debugger
         if (that.userName === '' || that.password === '') {
           console.log('用户名或密码不能为空')
           return
@@ -46,7 +45,7 @@
           (response) => {
             that.$router.go('/test')
             if (response.body.code === 200) {
-              that.$router.push({name: 'test'})
+              that.$router.push({name: 'main'})
             }
           },
           (response) => {

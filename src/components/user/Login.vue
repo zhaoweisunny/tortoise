@@ -43,7 +43,6 @@
           userName: that.userName, password: md5(that.password)
         }).then(
           (response) => {
-            that.$router.go('/test')
             if (response.body.code === 200) {
               that.$router.push({name: 'main'})
             }

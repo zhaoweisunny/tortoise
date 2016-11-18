@@ -23,7 +23,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/alarmcenter': {
-        target: 'http://192.168.0.180:8080',
+        target: '192.168.0.180:8080',
         changeOrigin: true,
         pathRewrite: {
           '/^alarmcenter': '/alarmcenter'

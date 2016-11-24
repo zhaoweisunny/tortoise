@@ -37,5 +37,5 @@
   .headBox {width:@width; height: 90px;overflow: @hidden; position: fixed; top:0; left:0}
   .main {width:@width;height:@height; overflow: @hidden;}
   .leftBox {width:20%; height: @height; overflow: @hidden;display: inline-block; position: fixed; top:90px;left:0}
-  .rightBox {width: 80%;height: @height;display:inline-block;text-align: center; position: fixed; top:90px;left:20%}
+  .rightBox {width: 80%;height: @height;display:inline-block;text-align: center; position: fixed; top:90px;left:20%;padding: 15px;}
 </style>

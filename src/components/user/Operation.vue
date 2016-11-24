@@ -23,7 +23,7 @@
       </a>
     </div>
     <div class="opRight pull-right">
-      <input type="text" class="searchInput" id="keywords" placeholder="类型代码/类型名称">
+      <input type="text" class="searchInput" v-model="retrieval" id="keywords" placeholder="类型代码/类型名称">
       <span class="search">
         <img src="../../assets/images/search.png" width="20" alt="">
       </span>

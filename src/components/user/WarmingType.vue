@@ -25,7 +25,7 @@
     </div>
     <div class="fixedB">
       <div class="pageBox clear">
-        <page :pageNums="pageNums" v-on:click="refreshData"></page>
+        <page :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
       </div>
       <div class="boxBotton">
         <div class="leftDiv">
@@ -60,8 +60,9 @@
       return {
         retrieval: '',
         jsonData: '',
-        pageNums: '',
-        pageNum: '1'
+        pageNum: 1,
+        pageSize: 5,
+        totalPages: 100
       }
     },
     components: {
@@ -69,28 +70,32 @@
     },
     mounted () {
       let that = this
-      this.$http.post('/alarmcenter/back/AlarmType/selectByRetrieval.page', {
-        pageNum: that.pageNum, pageSize: '5', retrieval: that.retrieval
-      }).then(
-        (response) => {
-          if (response.body.code === 200) {
-            let data = response.body.data
-            debugger
-            let pageNums = Math.ceil(data.totalRows / data.pageSize) // 总页数
-            that.$set(that, 'jsonData', data.list)
-            that.$set(that, 'pageNums', pageNums) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
-          }
-        },
-      (response) => {
-        console.log('fail' + response)
-      }
-      )
+      that.pageNum = parseInt(this.$route.params.pageNum) || 1
+      that.pageSize = parseInt(this.$route.params.pageSize) || 5
+      this.getData()
+      this.$router.afterEach(function (prven, next) {
+        that.getData()
+      })
     },
     methods: {
-      refreshData: function (index) {
-        var that = this
-        that.pageNum = index
-        console.log(index)
+      getData: function () {
+        let that = this
+        that.pageNum = parseInt(this.$route.params.pageNum) || 1
+        that.pageSize = parseInt(this.$route.params.pageSize) || 5
+        that.$http.post('/alarmcenter/back/AlarmType/selectByRetrieval.page', {
+          pageNum: that.pageNum, pageSize: that.pageSize, retrieval: that.retrieval
+        }).then(
+          (response) => {
+            if (response.body.code === 200) {
+              let data = response.body.data
+              let totalPages = data.totalRows // 总页数
+              that.$set(that, 'jsonData', data.list)
+              that.$set(that, 'totalPages', totalPages) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
+            }
+          },
+        (response) => {
+          console.log('fail' + response)
+        })
       }
     }
   }

@@ -22,7 +22,7 @@ export default [
     component: Main,
     children: [
       {path: '/', name: 'welcome', component: Welcome},
-      {path: '/warmingType', name: 'warmingType', component: WarmingType},
+      {path: '/warmingType/:pageNum/:pageSize', name: 'warmingType', component: WarmingType},
       {path: '/bus', name: 'bus', component: Bus},
       {path: '/phone', name: 'phone', component: Phone},
       {path: '/packet', name: 'packet', component: Packet}

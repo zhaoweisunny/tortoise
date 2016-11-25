@@ -6,8 +6,8 @@
   <div class="Page">
     <a target="_blank" class="shouye">首页</a>
     <a target="_blank" class="page-prev">上一页</a>
-    <div id="page_div" class="pagediv" v-for="(index, item) in pageNums">
-      <a href="javascript:;" @click="getData(index)" >{{index}}</a>
+    <div id="page_div" class="pagediv" v-for="item in list">
+      <a href="javascript:;" @click="getData(item)" :class="{active: item.active}" >{{item.index}}</a>
     </div>
     <a class="page-next">下一页</a>
     <a target="_blank" class="weiye">尾页</a>
@@ -19,15 +19,45 @@
 <script>
   export default {
     name: 'Page',
-    props: ['pageNums'],
+    props: ['pageNum', 'pageSize', 'totalPages'],
     data () {
       return {
-        active: true
+        active: true,
+        list: []
       }
     },
+    watch: {
+      'pageSize' (news, old) {
+        this.setInit()
+      },
+      'pageNum' (news, old) {
+        this.setInit()
+      }
+    },
+    mounted () {
+      // this.setInit()
+    },
     methods: {
-      getData: function (index) {
-        this.$emit('click', index)
+      setInit () {
+        let that = this
+        let pages = Math.ceil(this.totalPages / this.pageSize)   // 总页数
+        let dataArr = []
+        for (let i = 1; i <= pages; i++) {
+          let activeFlag = false
+          if (i === that.pageNum) {
+            activeFlag = true
+          }
+          dataArr.push({ index: i, active: activeFlag })  // index:当前页玛
+        }
+        that.$set(that, 'list', dataArr)
+      },
+      getData: function (item) {
+        let that = this
+        for (let i = 0; i < that.list.length; i++) {
+          that.list[i].active = false
+        }
+        item.active = true
+        this.$router.push({name: 'warmingType', params: {pageNum: item.index, pageSize: this.pageSize}})
       }
     }
   }

@@ -5,11 +5,11 @@
 <template>
   <div class="Page">
     <a target="_blank" class="shouye">首页</a>
-    <a target="_blank" class="page-prev">上一页</a>
+    <a class="page-prev" @click="nextPage(-1)">上一页</a>
     <div id="page_div" class="pagediv" v-for="item in list">
       <a href="javascript:;" @click="getData(item)" :class="{active: item.active}" >{{item.index}}</a>
     </div>
-    <a class="page-next">下一页</a>
+    <a class="page-next" @click="nextPage(1)">下一页</a>
     <a target="_blank" class="weiye">尾页</a>
     <label name="pagelabel">1/1</label><input type="text" class="jump_k" />
     <a target="_blank" class="jump">跳转</a>
@@ -17,9 +17,11 @@
 </template>
 
 <script>
+  import VuePaginate from 'vue-paginate'
   export default {
     name: 'Page',
-    props: ['pageNum', 'pageSize', 'totalPages'],
+    props: ['pageNum', 'pageSize', 'totalPages'], // 给子组件要传的参数
+    components: {VuePaginate},
     data () {
       return {
         active: true,
@@ -27,27 +29,30 @@
       }
     },
     watch: {
-      'pageSize' (news, old) {
+      'pageSize' (newValue, oldValue) {
         this.setInit()
       },
-      'pageNum' (news, old) {
+      'pageNum' (newValue, oldValue) {
+        this.setInit()
+      },
+      'totalPages' (newValue, oldValue) {
         this.setInit()
       }
     },
     mounted () {
-      // this.setInit()
+      this.setInit()
     },
     methods: {
       setInit () {
         let that = this
-        let pages = Math.ceil(this.totalPages / this.pageSize)   // 总页数
+        let pages = Math.ceil(this.totalPages / this.pageSize)  // 总页数
         let dataArr = []
         for (let i = 1; i <= pages; i++) {
           let activeFlag = false
           if (i === that.pageNum) {
             activeFlag = true
           }
-          dataArr.push({ index: i, active: activeFlag })  // index:当前页玛
+          dataArr.push({ index: i, active: activeFlag })  // index:当前页玛和active的状态
         }
         that.$set(that, 'list', dataArr)
       },
@@ -58,6 +63,22 @@
         }
         item.active = true
         this.$router.push({name: 'warmingType', params: {pageNum: item.index, pageSize: this.pageSize}})
+      },
+      nextPage: function (k) {
+        let lastI = 0
+        for (let i = 0; i < this.list.length; i++) {
+          if (this.list[i].active) {
+            lastI = i + k
+            if (k === 1 && lastI === this.list.length) {
+              return
+            }
+            if (k === -1 && lastI === -1) {
+              return
+            }
+          }
+        }
+        // debugger
+        this.getData(this.list[lastI])
       }
     }
   }

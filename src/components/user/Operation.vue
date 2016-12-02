@@ -5,26 +5,26 @@
 <template>
   <div class="Operation clear">
     <div class="opLeft pull-left">
-      <a href="javascript:;">
+      <a href="javascript:;" @click="addData">
         <img src="../../assets/images/add.png" alt="">
         添加
       </a>
-      <a href="javascript:;">
+      <a href="javascript:;" @click="editData">
         <img src="../../assets/images/edit.png" alt="">
         编辑
       </a>
-      <a href="javascript:;">
+      <a href="javascript:;" @click="deleteData">
         <img src="../../assets/images/delete.png" alt="">
         删除
       </a>
-      <a href="javascript:;">
+      <a href="javascript:;" @click="saveData">
         <img src="../../assets/images/save.png" alt="">
         保存
       </a>
     </div>
     <div class="opRight pull-right">
-      <input type="text" class="searchInput" v-model="retrieval" id="keywords" placeholder="类型代码/类型名称">
-      <span class="search">
+      <input type="text" class="searchInput" v-model='retrieval' :placeholder="placeholder" id="keywords">
+      <span class="search" @click="search">
         <img src="../../assets/images/search.png" width="20" alt="">
       </span>
     </div>
@@ -34,8 +34,28 @@
 <script>
   export default {
     name: 'Operation',
+    props: ['placeholder'],
     data () {
       return {
+        retrieval: ''
+      }
+    },
+    methods: {
+      search: function () {
+        let retrieval = this.retrieval
+        this.$emit('get-retrieval', retrieval)
+      },
+      addData: function () {
+        this.$emit('add-data')
+      },
+      saveData: function () {
+        this.$emit('save-data')
+      },
+      deleteData: function () {
+        this.$emit('delete-data')
+      },
+      editData: function () {
+        this.$emit('edit-data')
       }
     }
   }

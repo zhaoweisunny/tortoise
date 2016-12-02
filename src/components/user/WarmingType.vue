@@ -14,7 +14,8 @@
           <th style="width:20%">类型名称</th>
           <th style="width:50%">描述信息</th>
         </tr>
-        <tr v-for="(item, index) in jsonData" @click="selectRow(item.id)" :class="{active: item.active}">
+        <!--:class="{active: item.active}-->
+        <tr v-for="(item, index) in jsonData" @click="selectRow(item.id)" >
           <th><label><input type="checkbox" :checked="item.checked" /></label></th>
           <th>{{index+1}}</th>
           <th>{{ item.typeId }}</th>
@@ -70,7 +71,8 @@
         typeName: '',
         typeDesc: '',
         checked: false,
-        rowId: []
+        rowId: [],
+        display: 'none'
       }
     },
     components: {Operation, Page, Validator},
@@ -96,7 +98,7 @@
               let data = response.body.data
               for (let i = 0; i < data.list.length; i++) {
                 data.list[i].checked = false
-                data.list[i].active = false
+//                data.list[i].active = false
               }
               that.$set(that, 'jsonData', data.list) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
               that.$set(that, 'totalPages', data.totalRows) // 将数据总条数返回到data中
@@ -112,14 +114,17 @@
       },
       addData: function () {
         this.disabled = false
-        this.typeId = ''
-        this.typeName = ''
-        this.typeDesc = ''
+        this.checked = false
+        for (let i = 0; i < this.jsonData.length; i++) {
+          this.jsonData[i].checked = false
+        }
+        this.setNull()
       },
       saveData: function () {
         let that = this
         let url = ''
         let parms = {}
+        console.log(this.rowId)
         if (this.rowId.length === 0) {
           url = '/alarmcenter/back/AlarmType/insert'
           parms = {typeId: that.typeId, typeName: that.typeName, typeDesc: that.typeDesc}
@@ -132,6 +137,7 @@
           (response) => {
             if (response.body.code === 200) {
               that.getData()
+              this.setNull()
             }
           },
           (response) => {
@@ -151,13 +157,14 @@
           for (let i = 0; i < thisData.length; i++) {
             thisData[i].checked = false
             this.rowId = []
+            this.setNull()
           }
         }
       },
       selectRow: function (id) {
         let thisData = this.jsonData
         for (let i = 0; i < thisData.length; i++) {
-          thisData[i].active = false
+//          thisData[i].active = false
           if (thisData[i].id === id) {
             thisData[i].active = true
             thisData[i].checked = thisData[i].checked ? thisData[i].checked = false : true
@@ -172,6 +179,9 @@
                 if (this.rowId[j] !== id) {
                   tempRowId.push(this.rowId[j]) // 把rowId里面除了当前id的数据赋值给tempRowId
                 }
+              }
+              if (tempRowId.length === 0) {
+                this.setNull()
               }
               this.rowId = tempRowId
             }
@@ -191,6 +201,8 @@
           (response) => {
             if (response.body.code === 200) {
               that.getData()
+              that.rowId.length = 0
+              that.setNull()
               if (that.jsonData.length === 0) {
                 that.checked = false
               }
@@ -204,7 +216,6 @@
       editData: function () {
         this.isSelect()
         this.disabled = false
-        this.saveData()
       },
       isSelect: function () {
         let activeArry = []
@@ -213,10 +224,16 @@
             activeArry.push(this.jsonData[i].active)
           }
         }
+        console.log(activeArry)
         if (activeArry.length === this.jsonData.length) {
           console.log('请选择要删除或编辑的行')
           return
         }
+      },
+      setNull: function () {
+        this.typeId = ''
+        this.typeName = ''
+        this.typeDesc = ''
       }
     }
   }

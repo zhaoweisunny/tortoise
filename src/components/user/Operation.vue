@@ -9,21 +9,21 @@
         <img src="../../assets/images/add.png" alt="">
         添加
       </a>
-      <a href="javascript:;" @click="editData">
-        <img src="../../assets/images/edit.png" alt="">
-        编辑
-      </a>
-      <a href="javascript:;" @click="deleteData">
+      <!--<a href="javascript:;" @click="editData">-->
+        <!--<img src="../../assets/images/edit.png" alt="">-->
+        <!--编辑-->
+      <!--</a>-->
+      <a href="javascript:;" @click="batchDelete">
         <img src="../../assets/images/delete.png" alt="">
-        删除
+        批量删除
       </a>
-      <a href="javascript:;" @click="saveData">
-        <img src="../../assets/images/save.png" alt="">
-        保存
-      </a>
+      <!--<a href="javascript:;" @click="saveData">-->
+        <!--<img src="../../assets/images/save.png" alt="">-->
+        <!--保存-->
+      <!--</a>-->
     </div>
     <div class="opRight pull-right">
-      <input type="text" class="searchInput" v-model='retrieval' :placeholder="placeholder" id="keywords">
+      <input type="text" @keydown.enter="search" class="searchInput" v-model='retrieval' :placeholder="placeholder" id="keywords">
       <span class="search" @click="search">
         <img src="../../assets/images/search.png" width="20" alt="">
       </span>
@@ -48,15 +48,15 @@
       addData: function () {
         this.$emit('add-data')
       },
-      saveData: function () {
-        this.$emit('save-data')
-      },
-      deleteData: function () {
-        this.$emit('delete-data')
-      },
-      editData: function () {
-        this.$emit('edit-data')
+//      saveData: function () {
+//        this.$emit('save-data')
+//      },
+      batchDelete: function () {
+        this.$emit('batch-delete')
       }
+//      editData: function () {
+//        this.$emit('edit-data')
+//      }
     }
   }
 </script>

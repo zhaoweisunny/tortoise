@@ -59,7 +59,7 @@
         data.active = true
         let menuText = data.text
         if (menuText === '告 警 类 型') {
-          this.$router.push({name: 'warmingType', params: {pageNum: 1, pageSize: 5}})
+          this.$router.push({name: 'warmingType', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '公交端管理') {
           this.$router.push({name: 'bus'})
         } else if (menuText === '手机端管理') {

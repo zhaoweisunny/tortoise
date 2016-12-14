@@ -4,7 +4,7 @@
 
 <template>
   <div class="WarmingType clear">
-    <operation :placeholder="placeholder" v-on:edit-data="editData" v-on:save-data="saveData" v-on:add-data="addData" v-on:get-retrieval="searchRetrieval" v-on:delete-data="deleteData"></operation>
+    <operation :placeholder="placeholder" v-on:add-data="addData" v-on:get-retrieval="searchRetrieval" v-on:batch-delete="batchDelete"></operation>
     <div class="boxContent">
       <table border="1" cellspacing="0">
         <tr>
@@ -12,43 +12,25 @@
           <th style="width:10%">序号</th>
           <th style="width:20%">类型代码</th>
           <th style="width:20%">类型名称</th>
-          <th style="width:50%">描述信息</th>
+          <th style="width:30%">描述信息</th>
+          <th style="width:20%">操作</th>
         </tr>
-        <!--:class="{active: item.active}-->
-        <tr v-for="(item, index) in jsonData" @click="selectRow(item.id)" >
-          <th><label><input type="checkbox" :checked="item.checked" /></label></th>
+        <!--                      -->
+        <tr v-for="(item, index) in jsonData" :class="{active: item.active}" @click="rowLineHight(item.id)">
+          <th><label><input type="checkbox" @click="selectRow(item.id)" :checked="item.checked" /></label></th>
           <th>{{index+1}}</th>
           <th>{{ item.typeId }}</th>
           <th>{{ item.typeName }}</th>
           <th class="type_describeMess">{{item.typeDesc}}</th>
+          <th class="op">
+            <a @click="delRowData(item.id)" class="del" >删除 <img src="../../assets/images/delete.png" width="20" alt=""></a>
+            <a @click="editData(item.id)" class="edi">编辑 <img src="../../assets/images/edit.png" width="20" alt=""></a>
+          </th>
         </tr>
       </table>
     </div>
-    <div class="fixedB">
-      <div class="pageBox clear">
-        <page :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
-      </div>
-      <div class="boxBotton">
-        <div class="leftDiv">
-          <div class="mess">
-            <span>类型代码：<i>*</i></span>
-            <input type="text" class="inputText typeId" v-model="typeId" :disabled="disabled" />
-            <div class="tips" :style="{display:display}">告警类型编码格式不正确，请输入1-5位数字！</div>
-          </div>
-          <div class="mess">
-            <span>类型名称：<i>*</i></span>
-            <input type="text" class="inputText typeName" @blur="" v-model="typeName" :disabled="disabled" id="typeNameId" />
-            <div class="tips" :style="{display:display}">告警类型名称格式不正确，请输入2-100位！</div>
-          </div>
-        </div>
-        <div class="rightDiv">
-          <div class="mess">
-            <span>描述信息：<i class="vtop">*</i></span>
-            <textarea class="inputText typeDesc" @blur="" id="warmingDescribeId" :disabled="disabled" v-model="typeDesc"></textarea>
-            <div class="tips" :style="{display:display}">告描述格式不正确，请输入2-300个字符！</div>
-          </div>
-        </div>
-      </div>
+    <div class="pageBox clear">
+      <page :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
     </div>
   </div>
 </template>
@@ -56,6 +38,7 @@
   import Operation from './Operation'
   import Page from './Page'
   import Validator from 'vue-validator'
+
   export default {
     name: 'WarmingType',
     data () {
@@ -63,7 +46,7 @@
         retrieval: '',
         jsonData: '',
         pageNum: 1,  // 当前页数
-        pageSize: 5, // 每页显示条数
+        pageSize: 10, // 每页显示条数
         totalPages: '', // 数据总条数
         placeholder: '类型代码/类型名称',
         disabled: true,
@@ -79,17 +62,17 @@
     mounted () {
       let that = this
       that.pageNum = parseInt(this.$route.params.pageNum) || 1
-      that.pageSize = parseInt(this.$route.params.pageSize) || 5
+      that.pageSize = parseInt(this.$route.params.pageSize) || 10
       this.getData()
       this.$router.afterEach(function (prven, next) {
         that.getData()
       })
     },
     methods: {
-      getData: function () {
+      getData: function () {   // 请求接口获取数据列表
         let that = this
         that.pageNum = parseInt(this.$route.params.pageNum) || 1
-        that.pageSize = parseInt(this.$route.params.pageSize) || 5
+        that.pageSize = parseInt(this.$route.params.pageSize) || 10
         that.$http.post('/alarmcenter/back/AlarmType/selectByRetrieval.page', {
           pageNum: that.pageNum, pageSize: that.pageSize, retrieval: that.retrieval
         }).then(
@@ -98,7 +81,7 @@
               let data = response.body.data
               for (let i = 0; i < data.list.length; i++) {
                 data.list[i].checked = false
-//                data.list[i].active = false
+                data.list[i].active = false
               }
               that.$set(that, 'jsonData', data.list) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
               that.$set(that, 'totalPages', data.totalRows) // 将数据总条数返回到data中
@@ -108,23 +91,16 @@
           console.log('fail' + response)
         })
       },
-      searchRetrieval: function (retrieval) {
+      searchRetrieval: function (retrieval) { // 搜索
         this.retrieval = retrieval
         this.getData()
       },
-      addData: function () {
-        this.disabled = false
-        this.checked = false
-        for (let i = 0; i < this.jsonData.length; i++) {
-          this.jsonData[i].checked = false
-        }
-        this.setNull()
+      addData: function () {  // 添加
       },
-      saveData: function () {
+      saveData: function () { // 保存
         let that = this
         let url = ''
         let parms = {}
-        console.log(this.rowId)
         if (this.rowId.length === 0) {
           url = '/alarmcenter/back/AlarmType/insert'
           parms = {typeId: that.typeId, typeName: that.typeName, typeDesc: that.typeDesc}
@@ -145,34 +121,32 @@
           }
         )
       },
-      selectAll: function () {
+      selectAll: function () {  // 选中所有数据
         let thisData = this.jsonData
         this.checked = this.checked ? this.checked = false : true
         if (this.checked) {
           for (let i = 0; i < thisData.length; i++) {
             thisData[i].checked = true
             this.rowId.push(thisData[i].id)
+            thisData[i].active = false
+            this.setNull()
           }
         } else {
-          for (let i = 0; i < thisData.length; i++) {
-            thisData[i].checked = false
+          for (let j = 0; j < thisData.length; j++) {
+            thisData[j].checked = false
             this.rowId = []
+            thisData[j].active = false
             this.setNull()
           }
         }
       },
-      selectRow: function (id) {
+      selectRow: function (id) {  // 选中单行数据
         let thisData = this.jsonData
         for (let i = 0; i < thisData.length; i++) {
-//          thisData[i].active = false
           if (thisData[i].id === id) {
-            thisData[i].active = true
             thisData[i].checked = thisData[i].checked ? thisData[i].checked = false : true
             if (thisData[i].checked) {
               this.rowId.push(thisData[i].id)
-              this.typeId = thisData[i].typeId
-              this.typeName = thisData[i].typeName
-              this.typeDesc = thisData[i].typeDesc
             } else {
               let tempRowId = []
               for (let j = 0; j < this.rowId.length; j++) {
@@ -193,7 +167,16 @@
           this.checked = true
         }
       },
-      deleteData: function () {
+      rowLineHight: function (id) {  // 选中行效果
+        let thisData = this.jsonData
+        for (let i = 0; i < thisData.length; i++) {
+          thisData[i].active = false
+          if (thisData[i].id === id) {
+            thisData[i].active = true
+          }
+        }
+      },
+      batchDelete: function () {  // 批量/单行删除数据入口
         let that = this
         this.isSelect()
         this.$http.post('/alarmcenter/back/AlarmType/deleteById', JSON.stringify(that.rowId)
@@ -213,27 +196,40 @@
           }
         )
       },
-      editData: function () {
-        this.isSelect()
-        this.disabled = false
+      delRowData: function (id) {  // 单行删除
+        let arrId = []
+        arrId.push(id)
+        this.rowId = arrId
+        this.batchDelete()
       },
-      isSelect: function () {
+      editData: function (id) {   // 编辑数据
+        // Modal.open()
+//        this.open()
+//        this.isSelect()
+//        this.disabled = false
+      },
+      isSelect: function () {   // 全选,反选
         let activeArry = []
         for (let i = 0; i < this.jsonData.length; i++) {
           if (this.jsonData[i].active === false) {
             activeArry.push(this.jsonData[i].active)
           }
         }
-        console.log(activeArry)
         if (activeArry.length === this.jsonData.length) {
           console.log('请选择要删除或编辑的行')
           return
         }
       },
-      setNull: function () {
+      setNull: function () {  // 置空
         this.typeId = ''
         this.typeName = ''
         this.typeDesc = ''
+      },
+      open: function () {
+        // dialogModal.open()
+      },
+      confirm: function () {
+//        modal.close()
       }
     }
   }
@@ -248,11 +244,15 @@
     width:100%; height: 100%;
     table{
       th{text-align: left;color:#656565;padding-left:15px}
+      .op{
+        a:first-child{margin-right: 20px;}
+        img{vertical-align: bottom}
+      }
     }
     input[type='checkbox']{width:50px; height:30px;}
     tr.active{background-color: #f3f3f9}
   }
-  .fixedB{position: fixed; bottom:0; bottom:15px;width:80%;}
+  .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
   .boxBotton{
     border:1px solid #ddd; display: table;text-align:left;width:98%;
     .mess{position: relative;padding-bottom: 20px; margin-bottom: 20px;

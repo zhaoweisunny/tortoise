@@ -44,7 +44,7 @@
         }).then(
           (response) => {
             if (response.body.code === 200) {
-              that.$router.push({name: 'main'})
+              that.$router.push({name: 'welcome'})
             }
           },
           (response) => {

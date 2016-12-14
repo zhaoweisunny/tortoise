@@ -32,13 +32,14 @@
     <div class="pageBox clear">
       <page :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
     </div>
+    <add v-show="show" :selectId="selectId" :jsonData="jsonData"></add>
   </div>
 </template>
 <script>
   import Operation from './Operation'
   import Page from './Page'
   import Validator from 'vue-validator'
-
+  import Add from '../../template/Add'
   export default {
     name: 'WarmingType',
     data () {
@@ -55,10 +56,12 @@
         typeDesc: '',
         checked: false,
         rowId: [],
-        display: 'none'
+        display: 'none',
+        show: false,
+        selectId: ''
       }
     },
-    components: {Operation, Page, Validator},
+    components: {Operation, Page, Validator, Add},
     mounted () {
       let that = this
       that.pageNum = parseInt(this.$route.params.pageNum) || 1
@@ -203,10 +206,9 @@
         this.batchDelete()
       },
       editData: function (id) {   // 编辑数据
-        // Modal.open()
-//        this.open()
-//        this.isSelect()
-//        this.disabled = false
+        this.show = true
+        let selectId = id
+        this.$set(this, 'selectId', selectId)
       },
       isSelect: function () {   // 全选,反选
         let activeArry = []
@@ -226,7 +228,6 @@
         this.typeDesc = ''
       },
       open: function () {
-        // dialogModal.open()
       },
       confirm: function () {
 //        modal.close()
@@ -242,35 +243,35 @@
 
   .WarmingType {
     width:100%; height: 100%;
-    table{
-      th{text-align: left;color:#656565;padding-left:15px}
-      .op{
-        a:first-child{margin-right: 20px;}
-        img{vertical-align: bottom}
-      }
-    }
-    input[type='checkbox']{width:50px; height:30px;}
-    tr.active{background-color: #f3f3f9}
+  table{
+  th{text-align: left;color:#656565;padding-left:15px}
+  .op{
+  a:first-child{margin-right: 20px;}
+  img{vertical-align: bottom}
+  }
+  }
+  input[type='checkbox']{width:50px; height:30px;}
+  tr.active{background-color: #f3f3f9}
   }
   .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
   .boxBotton{
     border:1px solid #ddd; display: table;text-align:left;width:98%;
-    .mess{position: relative;padding-bottom: 20px; margin-bottom: 20px;
-      i{font-style: normal;color: #ff0000; vertical-align: middle }
-      .tips{color: #fb0006; font-size: @font12; margin-top: 5px; position: absolute; left:83px;}
-      .inputText{width:60%; font-size: @font14; padding: 5px 10px; border:1px solid #ddd; border-radius: 3px}
-    }
-    .leftDiv,.rightDiv,.centerBox{padding: 15px; height: 100%;display: table-cell; vertical-align: middle;
-      .mess{padding-bottom: 20px; margin-bottom: 20px;}
-    }
-    .leftDiv{border-right:1px solid #ddd; width:40%;
-      .inputText{height: 37px; line-height: 37px;}
-      .mess:last-child{margin-bottom: 0}
-    }
-    .rightDiv{width: 30%;
-      .vtop{vertical-align: top;}
-      textarea{height: 120px;width:80% !important;position: relative}
-      span{vertical-align: top}
-    }
+  .mess{position: relative;padding-bottom: 20px; margin-bottom: 20px;
+  i{font-style: normal;color: #ff0000; vertical-align: middle }
+  .tips{color: #fb0006; font-size: @font12; margin-top: 5px; position: absolute; left:83px;}
+  .inputText{width:60%; font-size: @font14; padding: 5px 10px; border:1px solid #ddd; border-radius: 3px}
+  }
+  .leftDiv,.rightDiv,.centerBox{padding: 15px; height: 100%;display: table-cell; vertical-align: middle;
+  .mess{padding-bottom: 20px; margin-bottom: 20px;}
+  }
+  .leftDiv{border-right:1px solid #ddd; width:40%;
+  .inputText{height: 37px; line-height: 37px;}
+  .mess:last-child{margin-bottom: 0}
+  }
+  .rightDiv{width: 30%;
+  .vtop{vertical-align: top;}
+  textarea{height: 120px;width:80% !important;position: relative}
+  span{vertical-align: top}
+  }
   }
 </style>

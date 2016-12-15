@@ -32,14 +32,14 @@
     <div class="pageBox clear">
       <page :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
     </div>
-    <add v-show="show" :selectId="selectId" :jsonData="jsonData"></add>
+    <type-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData"></type-edit>
   </div>
 </template>
 <script>
   import Operation from './Operation'
   import Page from './Page'
   import Validator from 'vue-validator'
-  import Add from '../../template/Add'
+  import TypeEdit from '../../template/TypeEdit'
   export default {
     name: 'WarmingType',
     data () {
@@ -57,11 +57,11 @@
         checked: false,
         rowId: [],
         display: 'none',
-        show: false,
-        selectId: ''
+        selectId: '',
+        showDialog: false
       }
     },
-    components: {Operation, Page, Validator, Add},
+    components: {Operation, Page, Validator, TypeEdit},
     mounted () {
       let that = this
       that.pageNum = parseInt(this.$route.params.pageNum) || 1
@@ -93,6 +93,12 @@
         (response) => {
           console.log('fail' + response)
         })
+      },
+      refreshData: function (flag) {
+        if (flag) {
+          this.getData()
+          this.showDialog = false
+        }
       },
       searchRetrieval: function (retrieval) { // 搜索
         this.retrieval = retrieval
@@ -206,8 +212,8 @@
         this.batchDelete()
       },
       editData: function (id) {   // 编辑数据
-        this.show = true
         let selectId = id
+        this.showDialog = true
         this.$set(this, 'selectId', selectId)
       },
       isSelect: function () {   // 全选,反选
@@ -226,11 +232,6 @@
         this.typeId = ''
         this.typeName = ''
         this.typeDesc = ''
-      },
-      open: function () {
-      },
-      confirm: function () {
-//        modal.close()
       }
     }
   }

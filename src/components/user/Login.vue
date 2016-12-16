@@ -23,6 +23,7 @@
 </template>
 
 <script>
+  import {default as swal} from 'sweetalert2'
   import md5 from 'md5'
   export default {
     name: 'login',
@@ -36,7 +37,7 @@
       login: function () {
         let that = this
         if (that.userName === '' || that.password === '') {
-          console.log('用户名或密码不能为空')
+          swal('用户名或密码不能为空')
           return
         }
         this.$http.post('/alarmcenter/back/user/login', {
@@ -45,6 +46,8 @@
           (response) => {
             if (response.body.code === 200) {
               that.$router.push({name: 'welcome'})
+            } else {
+              swal(response.body.message)
             }
           },
           (response) => {
@@ -155,4 +158,7 @@
       cursor: pointer
     }
   }
+</style>
+<style rel="stylesheet" lang="css">
+  @import "../../assets/css/sweetalert2.css";
 </style>

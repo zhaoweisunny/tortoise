@@ -3,13 +3,10 @@ import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
 import routes from './routes'
 import Paginate from 'vue-paginate'
-import Validator from 'vue-validator'
-import VueModal from 'vue-modal-plugin'
+// import Sweetalert from 'sweetalert2'
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Paginate) // 分页插件
-Vue.use(Validator) // 表单验证
-Vue.use(VueModal)
 // 3. 创建 router 实例，然后传 `routes` 配置
 // 你还可以传别的配置参数, 不过先这么简单着吧。
 const router = new VueRouter({

@@ -5,26 +5,26 @@
 <template>
 <div class="TypeEdit" v-show="showDialog">
   <div class="wrap">
-    <div class="wHead">编辑告警类型</div>
+    <div class="wHead">{{title}}</div>
     <div class="wContent">
       <div class="mess">
         <span class="lal">类型代码:<i>*</i></span>
-        <input type="text" v-model="typeId" name=1 @blur="validat(1,5,$event,/^\d{1,5}$/)" class="inputText">
+        <input type="text" v-model="typeId" @blur="validat(1,5,typeId,/^\d{1,5}$/)" class="inputText">
         <span class="tips">{{tips1}}</span>
       </div>
       <div class="mess">
         <span class="lal">类型名称:<i>*</i></span>
-        <input type="text" v-model="typeName" name=2 @blur="validat(2,100,$event)" class="inputText">
+        <input type="text" v-model="typeName" @blur="validat(2,100,typeName)" class="inputText">
         <span class="tips">{{tips2}}</span>
       </div>
       <div class="mess">
         <span class="lal">描述信息:<i>*</i></span>
-        <textarea type="text" v-model="typeDesc" name=3 @blur="validat(2,300,$event)" class="typeDesc inputText"></textarea>
+        <textarea type="text" v-model="typeDesc" @blur="validat(2,300,typeDesc)" class="typeDesc inputText"></textarea>
         <span class="tips">{{tips3}}</span>
       </div>
     </div>
     <div class="wButtons">
-      <span class="save" @click="update">保存</span>
+      <span class="save" @click="save">保存</span>
       <span class="cancel" @click="close">取消</span>
     </div>
   </div>
@@ -32,13 +32,12 @@
 </div>
 </template>
 <script>
+  import { default as swal } from 'sweetalert2'
   export default {
     name: 'TypeEdit',
-    props: ['selectId', 'jsonData'],
+    props: ['selectId', 'jsonData', 'opType'],
     data () {
       return {
-        msg: 'hello',
-        show1: false,
         typeId: '',
         typeName: '',
         typeDesc: '',
@@ -46,27 +45,41 @@
         tips1: '',
         tips2: '',
         tips3: '',
-        flag: false
-//        items: [
-//          {thisIndex: 1, tips1: ''},
-//          {thisIndex: 2, tips1: ''},
-//          {thisIndex: 3, tips1: ''}
-//        ]
+        flag: false,
+        title: '',
+        url: '',
+        parms: {}
       }
     },
     watch: {
       'selectId' (newValue, oldValue) {
         this.setMess()
       },
-      'jsonData' (newValue, oldValue) {
-        this.setMess()
+      'opType' (newValue, oldValue) {
+        if (newValue === 'edit') {
+          this.title = '编辑高警类型'
+        }
+        if (newValue === 'add') {
+          this.jsonData = ''
+          this.title = '添加高警类型'
+        }
       }
     },
     mounted () {
-      this.setMess()
+      if (this.opType === 'edit') {
+        this.title = '编辑高警类型'
+      }
+      if (this.opType === 'add') {
+        this.title = '添加高警类型'
+      }
     },
     methods: {
       setMess: function () {
+        if (this.selectId === '') {
+          this.typeId = ''
+          this.typeName = ''
+          this.typeDesc = ''
+        }
         for (let i = 0; i < this.jsonData.length; i++) {
           if (this.jsonData[i].id === this.selectId) {
             this.typeId = this.jsonData[i].typeId
@@ -75,17 +88,29 @@
           }
         }
       },
-      update: function () {
+      save: function () {
+        if (this.opType === 'edit') {
+          this.url = '/alarmcenter/back/AlarmType/update'
+          this.parms = {id: JSON.parse(this.selectId), typeId: this.typeId, typeName: this.typeName, typeDesc: this.typeDesc}
+        }
+        if (this.opType === 'add') {
+          this.url = '/alarmcenter/back/AlarmType/insert'
+          this.parms = {typeId: this.typeId, typeName: this.typeName, typeDesc: this.typeDesc}
+        }
         if (this.tips1 === '' && this.tips2 === '' && this.tips3 === '') {
           let that = this
-          let parms = {id: JSON.parse(this.selectId), typeId: this.typeId, typeName: this.typeName, typeDesc: this.typeDesc}
-          this.$http.post('/alarmcenter/back/AlarmType/update', parms
+          this.$http.post(this.url, this.parms
           ).then(
             (response) => {
               if (response.body.code === 200) {
+                if (this.opType === 'add') {
+                  this.setNull()
+                }
                 that.showDialog = false
                 that.flag = true
                 that.$emit('update-data', that.flag)
+              } else {
+                swal(response.body.message)
               }
             },
             (response) => {
@@ -96,44 +121,44 @@
           return
         }
       },
+      setNull: function () {
+        this.typeId = ''
+        this.typeName = ''
+        this.typeDesc = ''
+      },
       close: function () {
+        if (this.opType === 'add') {
+          this.setNull()
+        }
         this.showDialog = false
         this.flag = true
         this.$emit('update-data', this.flag)
       },
-      validat: function (min, max, event, reg) {
-        let currValue = event.currentTarget.value
-        let currName = event.currentTarget.name
+      validat: function (min, max, obj, reg) {
         if (reg) {
-          let result = reg.test(currValue)
-          if (!result) {
-            this.tips1 = '告警类型编码格式不正确,请输入1-5位数字'
-          } else {
-            this.tips1 = ''
+          if (obj === this.typeId) {
+            let result = reg.test(this.typeId)
+            if (!result) {
+              this.tips1 = '告警类型编码格式不正确,请输入1-5位数字'
+            } else {
+              this.tips1 = ''
+            }
           }
         }
-        if (currValue.length >= parseInt(min) && currValue.length <= parseInt(max)) {
-          if (currName === '1') {
-            this.tips1 = ''
-          }
-          if (currName === '2') {
+        if (obj.length >= parseInt(min) && obj.length <= parseInt(max)) {
+          if (obj === this.typeName) {
             this.tips2 = ''
           }
-          if (currName === '3') {
+          if (obj === this.typeDesc) {
             this.tips3 = ''
           }
-//          event.currentTarget.nextSibling.nextSibling.style.display = 'none'
         } else {
-          if (currName === '1') {
-            this.tips1 = '告警类型编码格式不正确,请输入1-5位数字'
-          }
-          if (currName === '2') {
+          if (obj === this.typeName) {
             this.tips2 = '告警类型名称格式不正确,请输入2-100位'
           }
-          if (currName === '3') {
+          if (obj === this.typeDesc) {
             this.tips3 = '告警描述格式不正确,请输入2-300个字符'
           }
-//          event.currentTarget.nextSibling.nextSibling.style.display = 'inline-block'
         }
       }
     }
@@ -165,4 +190,7 @@
   .save{background-color: #0000ed;margin-right: 10px;}
   .cancel{background-color: #949494; margin-left: 10px;}
   }
+</style>
+<style rel="stylesheet" lang="css">
+  @import "../assets/css/sweetalert2.css";
 </style>

@@ -58,6 +58,7 @@
           dataArr.push({ index: i, active: activeFlag })  // index:当前页玛和active的状态
         }
         that.$set(that, 'list', dataArr)
+
         for (let j = 0; j < that.list.length; j++) {
           if (that.list[0].active) {
             that.active1 = true
@@ -71,6 +72,10 @@
             that.active1 = false
             that.active2 = false
           }
+        }
+        if (that.list.length === 1) {
+          that.active1 = true
+          that.active2 = true
         }
       },
       getData: function (item) {

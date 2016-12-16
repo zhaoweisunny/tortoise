@@ -30,9 +30,9 @@
       </table>
     </div>
     <div class="pageBox clear">
-      <page :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
+      <page v-show="pageShow" :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
     </div>
-    <type-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData"></type-edit>
+    <type-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData" :opType="opType"></type-edit>
   </div>
 </template>
 <script>
@@ -40,6 +40,7 @@
   import Page from './Page'
   import Validator from 'vue-validator'
   import TypeEdit from '../../template/TypeEdit'
+  import { default as swal } from 'sweetalert2'
   export default {
     name: 'WarmingType',
     data () {
@@ -58,7 +59,9 @@
         rowId: [],
         display: 'none',
         selectId: '',
-        showDialog: false
+        showDialog: false,
+        opType: '',
+        pageShow: true
       }
     },
     components: {Operation, Page, Validator, TypeEdit},
@@ -82,17 +85,25 @@
           (response) => {
             if (response.body.code === 200) {
               let data = response.body.data
-              for (let i = 0; i < data.list.length; i++) {
-                data.list[i].checked = false
-                data.list[i].active = false
-              }
-              that.$set(that, 'jsonData', data.list) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
-              that.$set(that, 'totalPages', data.totalRows) // 将数据总条数返回到data中
+              this.renderData(data)
             }
           },
         (response) => {
           console.log('fail' + response)
         })
+      },
+      renderData: function (data) {
+        if (data.list.length === 0) {
+          this.pageShow = false
+        } else {
+          this.pageShow = true
+        }
+        for (let i = 0; i < data.list.length; i++) {
+          data.list[i].checked = false
+          data.list[i].active = false
+        }
+        this.$set(this, 'jsonData', data.list) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
+        this.$set(this, 'totalPages', data.totalRows) // 将数据总条数返回到data中
       },
       refreshData: function (flag) {
         if (flag) {
@@ -104,32 +115,6 @@
         this.retrieval = retrieval
         this.getData()
       },
-      addData: function () {  // 添加
-      },
-      saveData: function () { // 保存
-        let that = this
-        let url = ''
-        let parms = {}
-        if (this.rowId.length === 0) {
-          url = '/alarmcenter/back/AlarmType/insert'
-          parms = {typeId: that.typeId, typeName: that.typeName, typeDesc: that.typeDesc}
-        } else {
-          url = '/alarmcenter/back/AlarmType/update'
-          parms = {id: JSON.parse(this.rowId), typeId: this.typeId, typeName: this.typeName, typeDesc: this.typeDesc}
-        }
-        this.$http.post(url, parms
-        ).then(
-          (response) => {
-            if (response.body.code === 200) {
-              that.getData()
-              this.setNull()
-            }
-          },
-          (response) => {
-            console.log('fail' + response.body.message)
-          }
-        )
-      },
       selectAll: function () {  // 选中所有数据
         let thisData = this.jsonData
         this.checked = this.checked ? this.checked = false : true
@@ -138,18 +123,16 @@
             thisData[i].checked = true
             this.rowId.push(thisData[i].id)
             thisData[i].active = false
-            this.setNull()
           }
         } else {
           for (let j = 0; j < thisData.length; j++) {
             thisData[j].checked = false
             this.rowId = []
             thisData[j].active = false
-            this.setNull()
           }
         }
       },
-      selectRow: function (id) {  // 选中单行数据
+      selectRow: function (id) {  // 选中单行,多行数据
         let thisData = this.jsonData
         for (let i = 0; i < thisData.length; i++) {
           if (thisData[i].id === id) {
@@ -162,9 +145,6 @@
                 if (this.rowId[j] !== id) {
                   tempRowId.push(this.rowId[j]) // 把rowId里面除了当前id的数据赋值给tempRowId
                 }
-              }
-              if (tempRowId.length === 0) {
-                this.setNull()
               }
               this.rowId = tempRowId
             }
@@ -186,8 +166,14 @@
         }
       },
       batchDelete: function () {  // 批量/单行删除数据入口
+        if (this.rowId.length === 0) {
+          swal('请选择要删除的行')
+        }
         let that = this
-        this.isSelect()
+        if (this.rowId.length === 0) {
+          console.log('请选择要删除的行')
+          return
+        }
         this.$http.post('/alarmcenter/back/AlarmType/deleteById', JSON.stringify(that.rowId)
         ).then(
           (response) => {
@@ -212,31 +198,23 @@
         this.batchDelete()
       },
       editData: function (id) {   // 编辑数据
-        let selectId = id
+        this.opType = 'edit'
+        this.selectId = id
         this.showDialog = true
-        this.$set(this, 'selectId', selectId)
+        this.$set(this, 'jsonData', this.jsonData)
+        this.$set(this, 'selectId', this.selectId)
+        this.$set(this, 'opType', this.opType)
       },
-      isSelect: function () {   // 全选,反选
-        let activeArry = []
-        for (let i = 0; i < this.jsonData.length; i++) {
-          if (this.jsonData[i].active === false) {
-            activeArry.push(this.jsonData[i].active)
-          }
-        }
-        if (activeArry.length === this.jsonData.length) {
-          console.log('请选择要删除或编辑的行')
-          return
-        }
-      },
-      setNull: function () {  // 置空
-        this.typeId = ''
-        this.typeName = ''
-        this.typeDesc = ''
+      addData: function () {  // 添加
+        this.opType = 'add'
+        this.showDialog = true
+        this.$set(this, 'jsonData', '')
+        this.$set(this, 'selectId', '')
+        this.$set(this, 'opType', this.opType)
       }
     }
   }
 </script>
-
 
 <style lang="less" rel="stylesheet/less" type="text/css">
   @import "../../assets/css/global.less";
@@ -275,4 +253,7 @@
   span{vertical-align: top}
   }
   }
+</style>
+<style rel="stylesheet" lang="css">
+  @import "../../assets/css/sweetalert2.css";
 </style>

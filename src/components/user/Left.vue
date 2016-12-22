@@ -40,12 +40,18 @@
             img1: require('../../assets/images/packet.png'),
             img2: require('../../assets/images/packet1.png'),
             active: false
-          }
+          },
 //          { text: '告 警 消 息',
 //            img1: require('../../assets/images/message.png'),
 //            img2: require('../../assets/images/message1.png'),
 //            active: false
 //          }
+          { text: '告 警 记 录',
+            img1: require('../../assets/images/message.png'),
+            img2: require('../../assets/images/message1.png'),
+            active: false
+          }
+
         ]
       }
     },
@@ -61,11 +67,13 @@
         if (menuText === '告 警 类 型') {
           this.$router.push({name: 'warmingType', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '公交端管理') {
-          this.$router.push({name: 'bus'})
+          this.$router.push({name: 'bus', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '手机端管理') {
-          this.$router.push({name: 'phone'})
+          this.$router.push({name: 'phone', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '分 组 管 理') {
           this.$router.push({name: 'packet'})
+        } else if (menuText === '告 警 记 录') {
+          this.$router.push({name: 'warmingRecord', params: {pageNum: 1, pageSize: 10}})
         }
       }
     }

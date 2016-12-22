@@ -1,30 +1,33 @@
 /**
-* Created by myao on 16/11/18.
+* Created by myao on 16/12/22.
 */
 
 <template>
-  <div class="WarmingType clear">
-    <operation :placeholder="placeholder" v-on:add-data="addData" v-on:get-retrieval="searchRetrieval" v-on:batch-delete="batchDelete"></operation>
+  <div class="WarmingRecord clear">
+    <!--<operation :placeholder="placeholder" v-on:add-data="addData" v-on:get-retrieval="searchRetrieval" v-on:batch-delete="batchDelete"></operation>-->
     <div class="boxContent">
       <table border="1" cellspacing="0">
         <tr>
           <th><label><input type="checkbox" :checked="checked" @click="selectAll" id="checkAllId"/></label></th>
           <th style="width:10%">序号</th>
-          <th style="width:20%">类型代码</th>
-          <th style="width:20%">类型名称</th>
-          <th style="width:30%">描述信息</th>
-          <th style="width:20%">操作</th>
+          <th style="width:30%">告警图片</th>
+          <th style="width:10%">告警类型</th>
+          <th style="width:20%">告警公交</th>
+          <th style="width:20%">告警时间</th>
+          <th style="width:10%">操作</th>
         </tr>
         <!--                      -->
         <tr v-for="(item, index) in jsonData" :class="{active: item.active}" @click="rowLineHight(item.id)">
           <th><label><input type="checkbox" @click="selectRow(item.id)" :checked="item.checked" /></label></th>
           <th>{{index+1}}</th>
+          <th>
+            <img v-for="imgs in item.urls" :src="imgs" alt="" width="20">
+          </th>
           <th>{{ item.typeId }}</th>
-          <th>{{ item.typeName }}</th>
-          <th class="type_describeMess">{{item.typeDesc}}</th>
+          <th>{{ item.busRoute }}[{{item.plateNumber}}]</th>
+          <th>{{item.eventTimeFmt}}</th>
           <th class="op">
             <a @click="delRowData(item.id)" class="del" >删除 <img src="../../assets/images/delete.png" width="20" alt=""></a>
-            <a @click="editData(item.id)" class="edi">编辑 <img src="../../assets/images/edit.png" width="20" alt=""></a>
           </th>
         </tr>
       </table>
@@ -32,39 +35,36 @@
     <div class="pageBox clear">
       <page v-show="pageShow" :menu="menu" :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
     </div>
-    <type-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData" :opType="opType"></type-edit>
+    <phone-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData" :opType="opType"></phone-edit>
   </div>
 </template>
 <script>
-  import Operation from './Operation'
   import Page from './Page'
-  import TypeEdit from '../../template/TypeEdit'
   import { default as swal } from 'sweetalert2'
   export default {
-    name: 'WarmingType',
+    name: 'WarmingRecord',
     data () {
       return {
-        retrieval: '',
+        searchText: '',
+        typeId: '',
         jsonData: '',
         pageNum: 1,  // 当前页数
         pageSize: 10, // 每页显示条数
         totalPages: '', // 数据总条数
-        placeholder: '类型代码/类型名称',
+        placeholder: '公交路数/车牌号',
+        startEventTime: '',
+        endEventTime: '',
         disabled: true,
-//        typeId: '',
-//        typeName: '',
-//        typeDesc: '',
         checked: false,
         rowId: [],
         display: 'none',
         selectId: '',
         showDialog: false,
-        opType: '',
         pageShow: true,
-        menu: 'warmingType'
+        menu: 'warmingRecode'
       }
     },
-    components: {Operation, Page, TypeEdit},
+    components: {Page},
     mounted () {
       let that = this
       that.pageNum = parseInt(this.$route.params.pageNum) || 1
@@ -79,15 +79,15 @@
         let that = this
         that.pageNum = parseInt(this.$route.params.pageNum) || 1
         that.pageSize = parseInt(this.$route.params.pageSize) || 10
-        that.$http.post('/alarmcenter/back/AlarmType/selectByRetrieval.page', {
-          pageNum: that.pageNum, pageSize: that.pageSize, retrieval: that.retrieval
+        that.$http.post('/alarmcenter/back/behaviourRecord/selectByBehaviourRecords.page', {
+          pageNum: that.pageNum, pageSize: that.pageSize, searchText: that.searchText, startEventTime: this.startEventTime, endEventTime: this.endEventTime, typeId: this.typeId
         }).then(
-          (response) => {
-            if (response.body.code === 200) {
-              let data = response.body.data
-              this.renderData(data)
-            }
-          },
+        (response) => {
+          if (response.body.code === 200) {
+            let data = response.body.data
+            this.renderData(data)
+          }
+        },
         (response) => {
           console.log('fail' + response)
         })
@@ -111,8 +111,8 @@
           this.showDialog = false
         }
       },
-      searchRetrieval: function (retrieval) { // 搜索
-        this.retrieval = retrieval
+      searchRetrieval: function (searchText) { // 搜索
+        this.searchText = searchText
         this.getData()
       },
       selectAll: function () {  // 选中所有数据
@@ -174,7 +174,7 @@
           console.log('请选择要删除的行')
           return
         }
-        this.$http.post('/alarmcenter/back/AlarmType/deleteById', JSON.stringify(that.rowId)
+        this.$http.post('/alarmcenter/back/behaviourRecord/deleteById', JSON.stringify(that.rowId)
         ).then(
           (response) => {
             if (response.body.code === 200) {
@@ -196,20 +196,10 @@
         this.rowId = arrId
         this.batchDelete()
       },
-      editData: function (id) {   // 编辑数据
-        this.opType = 'edit'
-        this.selectId = id
-        this.showDialog = true
-        this.$set(this, 'jsonData', this.jsonData)
-        this.$set(this, 'selectId', this.selectId)
-        this.$set(this, 'opType', this.opType)
-      },
       addData: function () {  // 添加
-        this.opType = 'add'
         this.showDialog = true
         this.$set(this, 'jsonData', '')
         this.$set(this, 'selectId', '')
-        this.$set(this, 'opType', this.opType)
       }
     }
   }
@@ -219,20 +209,21 @@
   @import "../../assets/css/global.less";
   @import "../../assets/css/variable.less";
 
-  .WarmingType {
+  .WarmingRecord {
     width:100%; height: 100%;
     table{
       th{text-align: left;color:#656565;padding-left:15px}
       .op{
-        a:first-child{margin-right: 20px;}
+        a:first-child{margin-right: 5px;}
         img{vertical-align: bottom}
       }
     }
     input[type='checkbox']{width:50px; height:30px;}
     tr.active{background-color: #f3f3f9}
-    }
-    .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
+  }
+  .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
 </style>
 <style rel="stylesheet" lang="css">
   @import "../../assets/css/sweetalert2.css";
+</style>
 </style>

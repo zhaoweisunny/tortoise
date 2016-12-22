@@ -14,6 +14,7 @@ import WarmingType from './components/user/WarmingType'
 import Bus from './components/user/Bus'
 import Phone from './components/user/Phone'
 import Packet from './components/user/Packet'
+import WarmingRecord from './components/user/WarmingRecord'
 export default [
   { path: '/', name: 'login', component: Login },
   {
@@ -23,10 +24,10 @@ export default [
     children: [
       {path: '/', name: 'welcome', component: Welcome},
       {path: '/warmingType/:pageNum/:pageSize', name: 'warmingType', component: WarmingType},
-      {path: '/bus', name: 'bus', component: Bus},
-      {path: '/phone', name: 'phone', component: Phone},
-      {path: '/packet', name: 'packet', component: Packet}
+      {path: '/bus/:pageNum/:pageSize', name: 'bus', component: Bus},
+      {path: '/phone:pageNum/:pageSize', name: 'phone', component: Phone},
+      {path: '/packet', name: 'packet', component: Packet},
+      {path: '/warmingRecord:pageNum/:pageSize', name: 'warmingRecord', component: WarmingRecord}
     ]
   }
 ]
-

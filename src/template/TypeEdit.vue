@@ -57,20 +57,20 @@
       },
       'opType' (newValue, oldValue) {
         if (newValue === 'edit') {
-          this.title = '编辑高警类型'
+          this.title = '编辑告警类型'
         }
         if (newValue === 'add') {
           this.jsonData = ''
-          this.title = '添加高警类型'
+          this.title = '添加告警类型'
         }
       }
     },
     mounted () {
       if (this.opType === 'edit') {
-        this.title = '编辑高警类型'
+        this.title = '编辑告警类型'
       }
       if (this.opType === 'add') {
-        this.title = '添加高警类型'
+        this.title = '添加告警类型'
       }
     },
     methods: {

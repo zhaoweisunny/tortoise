@@ -5,10 +5,10 @@
 <template>
   <div class="left">
     <ul>
-      <li v-for="data in item" @click="menuClick(data)" :class="{ active: data.active }">
-        <img :src="data.img1" alt="" width="20" class="img1">
-        <img :src="data.img2" alt="" width="20" class="img2">
-        <a href="javascript:;">{{data.text}}</a>
+      <li v-for="m in item" @click="menuClick(m)" :class="{ active: m.active }">
+        <img :src="m.img1" alt="" width="20" class="img1">
+        <img :src="m.img2" alt="" width="20" class="img2">
+        <a href="javascript:;">{{m.text}}</a>
       </li>
     </ul>
   </div>
@@ -57,13 +57,13 @@
     },
     components: {WarmingType},
     methods: {
-      menuClick: function (data) {
+      menuClick: function (m) {
         let itemArry = this.item
         for (let i = 0; i < itemArry.length; i++) {
           itemArry[i].active = false
         }
-        data.active = true
-        let menuText = data.text
+        m.active = true
+        let menuText = m.text
         if (menuText === '告 警 类 型') {
           this.$router.push({name: 'warmingType', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '公交端管理') {
@@ -71,7 +71,7 @@
         } else if (menuText === '手机端管理') {
           this.$router.push({name: 'phone', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '分 组 管 理') {
-          this.$router.push({name: 'packet'})
+          this.$router.push({name: 'packet', params: {pageNum: 1, pageSize: 10}})
         } else if (menuText === '告 警 记 录') {
           this.$router.push({name: 'warmingRecord', params: {pageNum: 1, pageSize: 10}})
         }

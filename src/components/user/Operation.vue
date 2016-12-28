@@ -66,7 +66,7 @@
   @import "../../assets/css/variable.less";
 
   .Operation {
-    width:100%;padding:15px; border:1px solid #ddd; background-color: #dae6f4;
+    width:100%;padding:15px; border:1px solid #ddd; background-color: #dae6f4;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
     a {display: inline-block; margin-right: 15px; font-size: @font14; height: 35px;
       line-height: 35px;
       img{vertical-align: middle; margin-right: 5px;}

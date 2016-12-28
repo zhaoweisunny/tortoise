@@ -89,11 +89,14 @@
         }
       },
       save: function () {
+        let tips = ''
         if (this.opType === 'edit') {
+          tips = '修改成功'
           this.url = '/alarmcenter/back/AlarmType/update'
           this.parms = {id: JSON.parse(this.selectId), typeId: this.typeId, typeName: this.typeName, typeDesc: this.typeDesc}
         }
         if (this.opType === 'add') {
+          tips = '添加成功'
           this.url = '/alarmcenter/back/AlarmType/insert'
           this.parms = {typeId: this.typeId, typeName: this.typeName, typeDesc: this.typeDesc}
         }
@@ -109,6 +112,7 @@
                 that.showDialog = false
                 that.flag = true
                 that.$emit('update-data', that.flag)
+                swal(tips)
               } else {
                 swal(response.body.message)
               }

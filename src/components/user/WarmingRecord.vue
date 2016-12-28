@@ -4,7 +4,33 @@
 
 <template>
   <div class="WarmingRecord clear">
-    <!--<operation :placeholder="placeholder" v-on:add-data="addData" v-on:get-retrieval="searchRetrieval" v-on:batch-delete="batchDelete"></operation>-->
+    <div class="topOperation clear">
+      <div class="pull-left boxLeft">
+        <span class="delete" @click="batchDelete">
+          <img src="../../assets/images/delete.png" alt="">
+          批量删除删除
+        </span>
+        <span class="startTime">
+          <input id="startTime" v-model="startEventTime" @click="selectStart" class="laydate-icon" placeholder="告警开始时间"/>
+        </span>
+        <span>到</span>
+        <span class="endTime">
+          <input id="endTime" @click="selectEnd" v-model="endEventTime" class="laydate-icon" placeholder="告警结束时间"/>
+        </span>
+        <span>
+          <select v-model="selectType" @change="selectWarmingType">
+            <option value="-1">全部</option>
+            <option v-for="type in typeData" :value="type.id">{{type.typeId}}</option>
+          </select>
+        </span>
+      </div>
+      <div class="class pull-right boxRight">
+        <input type="text" @keydown.enter="searchRetrieval" class="inputText" v-model='searchText' :placeholder="placeholder" id="keywords">
+        <span class="search" @click="searchRetrieval">
+          <img src="../../assets/images/search.png" width="20" alt="">
+        </span>
+      </div>
+    </div>
     <div class="boxContent">
       <table border="1" cellspacing="0">
         <tr>
@@ -33,24 +59,25 @@
       </table>
     </div>
     <div class="pageBox clear">
-      <page v-show="pageShow" :menu="menu" :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
+      <pager :totalPage="totalPage" :initPage="page" @go-page="goPage"></pager>
     </div>
-    <phone-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData" :opType="opType"></phone-edit>
   </div>
 </template>
 <script>
-  import Page from './Page'
   import { default as swal } from 'sweetalert2'
+  import Pager from 'vue-simple-pager'
   export default {
     name: 'WarmingRecord',
     data () {
       return {
         searchText: '',
+        selectType: '-1',
         typeId: '',
         jsonData: '',
-        pageNum: 1,  // 当前页数
+        pageNum: 1,
+        page: 1,  // 当前页数
         pageSize: 10, // 每页显示条数
-        totalPages: '', // 数据总条数
+        totalPage: '',
         placeholder: '公交路数/车牌号',
         startEventTime: '',
         endEventTime: '',
@@ -60,37 +87,63 @@
         display: 'none',
         selectId: '',
         showDialog: false,
-        pageShow: true,
-        menu: 'warmingRecode'
+//        pageShow: true,
+        typeData: []
       }
     },
-    components: {Page},
+    components: {Pager},
     mounted () {
       let that = this
-      that.pageNum = parseInt(this.$route.params.pageNum) || 1
-      that.pageSize = parseInt(this.$route.params.pageSize) || 10
+      that.getType()
+      this.pageNum = parseInt(this.$route.params.page) || 1
+      this.pageSize = parseInt(this.$route.params.pageSize) || 10
       this.getData()
       this.$router.afterEach(function (prven, next) {
         that.getData()
       })
     },
     methods: {
+      goPage (data) {
+        this.page = data.page
+        this.$router.push({name: 'warmingRecord', params: {pageNum: this.page, pageSize: this.pageSize}})
+//        this.getData()
+      },
       getData: function () {   // 请求接口获取数据列表
         let that = this
-        that.pageNum = parseInt(this.$route.params.pageNum) || 1
-        that.pageSize = parseInt(this.$route.params.pageSize) || 10
+        this.pageNum = parseInt(this.$route.params.page) || 1
+        this.pageSize = parseInt(this.$route.params.pageSize) || 10
+        if (this.startEventTime !== null && this.endEventTime !== null) {
+          let sDate = new Date(this.startEventTime).getTime()
+          let eDate = new Date(this.endEventTime).getTime()
+          if (sDate > eDate) {
+            sDate = eDate
+            this.endEventTime = this.startEventTime
+          }
+        }
         that.$http.post('/alarmcenter/back/behaviourRecord/selectByBehaviourRecords.page', {
-          pageNum: that.pageNum, pageSize: that.pageSize, searchText: that.searchText, startEventTime: this.startEventTime, endEventTime: this.endEventTime, typeId: this.typeId
+          pageNum: that.page, pageSize: that.pageSize, searchText: that.searchText, startEventTime: this.startEventTime, endEventTime: this.endEventTime, typeId: this.typeId
         }).then(
         (response) => {
           if (response.body.code === 200) {
             let data = response.body.data
-            this.renderData(data)
+            that.renderData(data)
           }
         },
         (response) => {
-          console.log('fail' + response)
+          swal('fail' + response)
         })
+      },
+      getType: function () {
+        this.$http.post('/alarmcenter/back/AlarmType/findAllAlarmTypes', {}).then(
+          (response) => {
+            if (response.body.code === 200) {
+              this.typeData = response.body.data
+            }
+          },
+          (response) => {
+            swal('fail' + response.body.message)
+          }
+        )
       },
       renderData: function (data) {
         if (data.list.length === 0) {
@@ -103,7 +156,8 @@
           data.list[i].active = false
         }
         this.$set(this, 'jsonData', data.list) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
-        this.$set(this, 'totalPages', data.totalRows) // 将数据总条数返回到data中
+        this.$set(this, 'totalPage', Math.ceil(data.totalRows / data.pageSize))
+        this.checked = false
       },
       refreshData: function (flag) {
         if (flag) {
@@ -111,8 +165,7 @@
           this.showDialog = false
         }
       },
-      searchRetrieval: function (searchText) { // 搜索
-        this.searchText = searchText
+      searchRetrieval: function () { // 搜索
         this.getData()
       },
       selectAll: function () {  // 选中所有数据
@@ -166,29 +219,36 @@
         }
       },
       batchDelete: function () {  // 批量/单行删除数据入口
-        if (this.rowId.length === 0) {
-          swal('请选择要删除的行')
-        }
         let that = this
         if (this.rowId.length === 0) {
-          console.log('请选择要删除的行')
+          swal('请选择要删除的行')
           return
         }
-        this.$http.post('/alarmcenter/back/behaviourRecord/deleteById', JSON.stringify(that.rowId)
-        ).then(
-          (response) => {
-            if (response.body.code === 200) {
-              that.getData()
-              that.rowId.length = 0
-              if (that.jsonData.length === 0) {
-                that.checked = false
+        swal({
+          title: '您确定要删除所选用户吗?',
+          text: '您确定要删除所选用户吗?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '是的，我要删除!',
+          cancelButtonText: 'cancel'
+        }).then(function () {
+          that.$http.post('/alarmcenter/back/behaviourRecord/deleteById', JSON.stringify(that.rowId)
+          ).then(
+            (response) => {
+              if (response.body.code === 200) {
+                that.getData()
+                that.rowId.length = 0
+                if (that.jsonData.length === 0) {
+                  that.checked = false
+                }
               }
+            },
+            (response) => {
+              swal('fail' + response.body.message)
             }
-          },
-          (response) => {
-            console.log('fail' + response.body.message)
-          }
-        )
+          )
+        }, function (dismiss) {
+        })
       },
       delRowData: function (id) {  // 单行删除
         let arrId = []
@@ -200,6 +260,52 @@
         this.showDialog = true
         this.$set(this, 'jsonData', '')
         this.$set(this, 'selectId', '')
+      },
+      selectStart: function () {  // 选择时间
+        let that = this
+        window.laydate({
+          elem: '#startTime',
+          istoday: false,
+          istime: true,
+          format: 'YYYY/MM/DD hh:mm:ss',
+          festival: true,
+          max: '2099/12/12 23: 59:59',
+          choose: function (datas) {
+            if (datas !== '') {
+              that.startEventTime = datas
+              that.searchText = ''
+              that.getData()
+            }
+          }
+        })
+      },
+      selectEnd: function () {   // 选择时间
+        let that = this
+        window.laydate({
+          elem: '#endTime',
+          istoday: false,
+          istime: true,
+          format: 'YYYY/MM/DD hh:mm:ss',
+          festival: true,
+          max: '2099/12/12 23: 59:59',
+          choose: function (datas) {
+            if (datas !== '') {
+              that.endEventTime = datas
+              that.searchText = ''
+              that.getData()
+            }
+          }
+        })
+      },
+      selectWarmingType: function () {  // 选择告警类型
+        if (this.selectType !== '') {
+          this.searchText = ''
+          this.typeId = this.selectType
+        }
+        if (this.selectType === '-1') {
+          this.typeId = ''
+        }
+        this.getData()
       }
     }
   }
@@ -221,7 +327,19 @@
     input[type='checkbox']{width:50px; height:30px;}
     tr.active{background-color: #f3f3f9}
   }
-  .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
+    .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
+    .topOperation{width:100%;padding:15px; border:1px solid #ddd; background-color: #dae6f4;color: #666;
+      .boxLeft span{
+        display: inline-block;; margin-right: 15px; cursor: pointer; height: 35px; line-height: 35px; font-size: 14px;
+        img{vertical-align: middle; margin-right: 5px;}
+      }
+    .boxRight{background-color: #fff; height: 35px; line-height: 35px; width:350px; border-radius: 3px;
+      .inputText{display: inline-block; width: 280px; height: 32px; line-height: 32px; font-size: @font16; color: #666;border: none !important;}
+      .search{border-left:1px solid #eee; width:50px; height: 35px; line-height: 35px; display: inline-block;cursor: pointer;}
+      img{vertical-align: middle; margin-left: 6px;}
+    }
+    #startTime,#endTime{cursor: pointer}
+  }
 </style>
 <style rel="stylesheet" lang="css">
   @import "../../assets/css/sweetalert2.css";

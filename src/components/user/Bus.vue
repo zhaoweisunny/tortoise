@@ -38,14 +38,14 @@
       </table>
     </div>
     <div class="pageBox clear">
-      <page v-show="pageShow" :menu="menu" :pageNum="pageNum" :pageSize="pageSize" :totalPages="totalPages" ></page>
+      <pager :totalPage="totalPage" :initPage="page" @go-page="goPage"></pager>
     </div>
     <bus-edit v-show="showDialog" v-on:update-data="refreshData" :selectId="selectId" :jsonData="jsonData" :opType="opType"></bus-edit>
   </div>
 </template>
 <script>
   import Operation from './Operation'
-  import Page from './Page'
+  import Pager from 'vue-simple-pager'
   import BusEdit from '../../template/BusEdit'
   import { default as swal } from 'sweetalert2'
   export default {
@@ -54,28 +54,26 @@
       return {
         retrieval: '',   // 关键字
         jsonData: '',   // 获取到的数据,数组格式
-        pageNum: 1,  // 当前页数
+        pageNum: 1,
+        page: 1,  // 当前页数
         pageSize: 10, // 每页显示条数
-        totalPages: '', // 数据总条数
+        totalPage: '', // 数据总条数
         placeholder: '登录名/车牌号/路数/司机名',   // placeholder
         disabled: true,    // 编辑状态
-//        typeId: '',      // 告警类型
-//        typeName: '',    //  告警名称
-//        typeDesc: '',   // 告警描述
         checked: false,  // 全选设置
         rowId: [],    // 选中行的id
         display: 'none',
         selectId: '',   // 选中单行id
         showDialog: false,  // 弹框显示
         opType: '',   // 操作类型(添加/修改)
-        pageShow: true,  // 分页显示
-        menu: 'bus'
+        pageShow: true  // 分页显示
       }
     },
-    components: {Operation, Page, BusEdit},
+    components: {Operation, Pager, BusEdit},
     mounted () {
+      console.log(Pager)
       let that = this
-      that.pageNum = parseInt(this.$route.params.pageNum) || 1
+      that.pageNum = parseInt(this.$route.params.page) || 1
       that.pageSize = parseInt(this.$route.params.pageSize) || 10
       this.getData()
       this.$router.afterEach(function (prven, next) {
@@ -83,12 +81,16 @@
       })
     },
     methods: {
+      goPage (data) {
+        this.page = data.page
+        this.$router.push({name: 'bus', params: {pageNum: this.page, pageSize: this.pageSize}})
+      },
       getData: function () {   // 请求接口获取数据列表
         let that = this
-        that.pageNum = parseInt(this.$route.params.pageNum) || 1
+        that.pageNum = parseInt(this.$route.params.page) || 1
         that.pageSize = parseInt(this.$route.params.pageSize) || 10
         that.$http.post('/alarmcenter/back/TerminalUser/selectByRetrieval.page', {
-          pageNum: that.pageNum, pageSize: that.pageSize, retrieval: that.retrieval
+          pageNum: that.page, pageSize: that.pageSize, retrieval: that.retrieval
         }).then(
         (response) => {
           if (response.body.code === 200) {
@@ -111,7 +113,8 @@
           data.list[i].active = false
         }
         this.$set(this, 'jsonData', data.list) // 将ajax请求到对数据赋值给jsonData,并添加到返回对data中去
-        this.$set(this, 'totalPages', data.totalRows) // 将数据总条数返回到data中
+        this.$set(this, 'totalPage', Math.ceil(data.totalRows / data.pageSize)) // 将数据总条数返回到data中
+        this.checked = false
       },
       refreshData: function (flag) {
         if (flag) {
@@ -177,23 +180,35 @@
         console.log(this.rowId)
         if (this.rowId.length === 0) {
           swal('请选择要删除的行')
+          return
         }
         let that = this
-        this.$http.post('/alarmcenter/back/TerminalUser/deleteById', JSON.stringify(that.rowId)
-        ).then(
-        (response) => {
-          if (response.body.code === 200) {
-            that.getData()
-            that.rowId.length = 0
-            if (that.jsonData.length === 0) {
-              that.checked = false
+        swal({
+          title: '您确定要删除所选用户吗?',
+          text: '您确定要删除所选用户吗?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '是的，我要删除!',
+          cancelButtonText: 'cancel'
+        }).then(function () {
+          that.$http.post('/alarmcenter/back/TerminalUser/deleteById', JSON.stringify(that.rowId)
+          ).then(
+            (response) => {
+              if (response.body.code === 200) {
+                that.getData()
+                that.rowId.length = 0
+                if (that.jsonData.length === 0) {
+                  that.checked = false
+                }
+                swal('删除成功!')
+              }
+            },
+            (response) => {
+              console.log('fail' + response.body.message)
             }
-          }
-        },
-        (response) => {
-          console.log('fail' + response.body.message)
-        }
-        )
+          )
+        }, function (dismiss) {
+        })
       },
       delRowData: function (id) {  // 单行删除
         let arrId = []

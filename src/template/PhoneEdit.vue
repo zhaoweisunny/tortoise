@@ -106,10 +106,13 @@
         }
       },
       save: function () {
+        let tips = ''
         if (this.opType === 'edit') {
+          tips = '修改成功'
           this.parms = {id: JSON.parse(this.selectId), userName: this.userName, password: this.password, nickName: this.nickName, callPhone: this.callPhone}
         }
         if (this.opType === 'add') {
+          tips = '添加成功'
           this.parms = {userName: this.userName, password: this.password, nickName: this.nickName, callPhone: this.callPhone}
         }
         this.url = '/alarmcenter/back/mobileUser/saveUser'
@@ -125,6 +128,7 @@
                 that.showDialog = false
                 that.flag = true
                 that.$emit('update-data', that.flag)
+                swal(tips)
               } else {
                 swal(response.body.message)
               }

@@ -139,11 +139,14 @@
         this.$set(this, 'county', this.county)
       },
       save: function () {
+        let tips = ''
         if (this.opType === 'edit') {
+          tips = '修改成功'
           this.url = '/alarmcenter/back/TerminalUser/update'
           this.parms = {id: JSON.parse(this.selectId), userName: this.userName, password: '', plateNumber: this.plateNumber, busRoute: this.busRoute, province: this.province, city: this.city, county: this.county, driverName: this.driverName}
         }
         if (this.opType === 'add') {
+          tips = '添加成功'
           if (this.province === '' || this.city === '' || this.county === '') {
             this.tips5 = '请将地址填写完整'
           }
@@ -168,6 +171,7 @@
                 that.showDialog = false
                 that.flag = true
                 that.$emit('update-data', that.flag)
+                swal(tips)
               } else {
                 swal(response.body.message)
               }
@@ -247,21 +251,18 @@
         }
       },
       getP: function (p) {
-//        console.log('p:' + p)
         if (p === '') {
           this.tips5 = '请将地址填写完整'
         }
         this.province = p
       },
       getCi: function (ci) {
-//        console.log('ci' + ci)
         if (ci === '') {
           this.tips5 = '请将地址填写完整'
         }
         this.city = ci
       },
       getCo: function (co) {
-//        console.log('co:' + co)
         if (co === '') {
           this.tips5 = '请将地址填写完整'
         }

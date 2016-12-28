@@ -16,11 +16,9 @@
 </template>
 
 <script>
-  import VuePaginate from 'vue-paginate'
   export default {
     name: 'Page',
     props: ['pageNum', 'pageSize', 'totalPages', 'menu'], // 给子组件要传的参数
-    components: {VuePaginate},
     data () {
       return {
         active: true,
@@ -86,7 +84,7 @@
           that.list[i].active = false
         }
         item.active = true
-        this.$router.push({name: this.menu, params: {pageNum: item.index, pageSize: this.pageSize}})
+        this.$router.push({name: 'warmingRecord', params: {pageNum: 1, pageSize: 10}})
       },
       nextPage: function (k) {
         if (this.list.length === 1) {

@@ -25,7 +25,7 @@
         </span>
       </div>
       <div class="class pull-right boxRight">
-        <input type="text" @keydown.enter="searchRetrieval" class="inputText" v-model='searchText' :placeholder="placeholder" id="keywords">
+        <input type="text" @keydown.enter="searchRetrieval" class="inputText" v-model='retrieval' :placeholder="placeholder" id="keywords">
         <span class="search" @click="searchRetrieval">
           <img src="../../assets/images/search.png" width="20" alt="">
         </span>
@@ -70,7 +70,7 @@
     name: 'WarmingRecord',
     data () {
       return {
-        searchText: '',
+        retrieval: '',
         selectType: '-1',
         typeId: '',
         jsonData: '',
@@ -78,7 +78,7 @@
         page: 1,  // 当前页数
         pageSize: 10, // 每页显示条数
         totalPage: '',
-        placeholder: '公交路数/车牌号',
+        placeholder: '高警公交',
         startEventTime: '',
         endEventTime: '',
         disabled: true,
@@ -121,7 +121,7 @@
           }
         }
         that.$http.post('/alarmcenter/back/behaviourRecord/selectByBehaviourRecords.page', {
-          pageNum: that.page, pageSize: that.pageSize, searchText: that.searchText, startEventTime: this.startEventTime, endEventTime: this.endEventTime, typeId: this.typeId
+          pageNum: that.page, pageSize: that.pageSize, searchText: that.retrieval, startEventTime: this.startEventTime, endEventTime: this.endEventTime, typeId: this.typeId
         }).then(
         (response) => {
           if (response.body.code === 200) {
@@ -165,8 +165,10 @@
           this.showDialog = false
         }
       },
-      searchRetrieval: function () { // 搜索
-        this.getData()
+      searchRetrieval: function (retrieval) { // 搜索
+        this.searchText = retrieval
+        this.page = 1
+        this.$router.push({name: 'warmingRecord', params: {pageNum: this.page, pageSize: this.pageSize}})
       },
       selectAll: function () {  // 选中所有数据
         let thisData = this.jsonData
@@ -328,8 +330,8 @@
     tr.active{background-color: #f3f3f9}
   }
     .pageBox{position: fixed; bottom:0; bottom:15px;width:80%;}
-    .topOperation{width:100%;padding:15px; border:1px solid #ddd; background-color: #dae6f4;color: #666;
-      .boxLeft span{
+    .topOperation{width:100%;padding:15px; border:1px solid #ddd; background-color: #dae6f4;color: #666;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+  .boxLeft span{
         display: inline-block;; margin-right: 15px; cursor: pointer; height: 35px; line-height: 35px; font-size: 14px;
         img{vertical-align: middle; margin-right: 5px;}
       }

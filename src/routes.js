@@ -16,6 +16,7 @@ import Phone from './components/user/Phone'
 import Packet from './components/user/Packet'
 import WarmingRecord from './components/user/WarmingRecord'
 import PhoneUser from './components/user/PhoneUser'
+import BusUser from './components/user/BusUser'
 export default [
   { path: '/', name: 'login', component: Login },
   {
@@ -27,9 +28,10 @@ export default [
       {path: '/warmingType/:pageNum/:pageSize', name: 'warmingType', component: WarmingType},
       {path: '/bus/:pageNum/:pageSize', name: 'bus', component: Bus},
       {path: '/phone/:pageNum/:pageSize', name: 'phone', component: Phone},
-      {path: '/packet/:pageNum/:pageSize?/ids', name: 'packet', component: Packet},
+      {path: '/packet/:pageNum/:pageSize', name: 'packet', component: Packet},
       {path: '/warmingRecord/:pageNum/:pageSize', name: 'warmingRecord', component: WarmingRecord},
-      {path: '/phoneUser/:pageNum/:pageSize', name: 'phoneUser', component: PhoneUser}
+      {path: '/phoneUser/:pageNum/:pageSize', name: 'phoneUser', component: PhoneUser},
+      {path: '/busUser/:pageNum/:pageSize', name: 'busUser', component: BusUser}
     ]
   }
 ]

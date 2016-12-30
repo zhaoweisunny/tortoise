@@ -27,6 +27,7 @@
           <th>{{ item.callPhone }}</th>
           <th v-if="item.deviceType === 3">{{ android }}</th>
           <th v-if="item.deviceType === 4">{{ ios }}</th>
+          <th v-if="item.deviceType === 5">{{ pc }}</th>
           <th v-if="item.deviceType === null">{{noData}}</th>
           <th v-if="item.deviceType === null">
             <img :src="status2" alt="" width="20">
@@ -77,7 +78,8 @@
         pageShow: true,
         menu: 'phone',
         android: 'android',
-        ios: 'ios',
+        ios: 'IOS',
+        pc: 'PC',
         status1: require('../../assets/images/yes.png'),
         status2: require('../../assets/images/no.png')
       }
@@ -114,9 +116,6 @@
           console.log('fail' + response)
         })
       },
-      getDataByGroupId: function () {
-        console.log('idswei:' + this.selectId)
-      },
       renderData: function (data) {
         if (data.list.length === 0) {
           this.pageShow = false
@@ -138,7 +137,8 @@
       },
       searchRetrieval: function (searchT) { // 搜索
         this.searchT = searchT
-        this.getData()
+        this.page = 1
+        this.$router.push({name: 'bus', params: {pageNum: this.page, pageSize: this.pageSize}})
       },
       selectAll: function () {  // 选中所有数据
         let thisData = this.jsonData

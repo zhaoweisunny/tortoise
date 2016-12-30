@@ -9,17 +9,17 @@
     <div class="wContent">
       <div class="mess">
         <span class="lal">类型代码:<i>*</i></span>
-        <input type="text" v-model="typeId" @blur="validat(1,5,typeId,/^\d{1,5}$/)" class="inputText">
+        <input type="text" v-model="typeId" @blur="validateNum(1,5,typeId,/^\d{1,5}$/,1)" class="inputText">
         <span class="tips">{{tips1}}</span>
       </div>
       <div class="mess">
         <span class="lal">类型名称:<i>*</i></span>
-        <input type="text" v-model="typeName" @blur="validat(2,100,typeName)" class="inputText">
+        <input type="text" v-model="typeName" @blur="validat(2,100,typeName,2)" class="inputText">
         <span class="tips">{{tips2}}</span>
       </div>
       <div class="mess">
         <span class="lal">描述信息:<i>*</i></span>
-        <textarea type="text" v-model="typeDesc" @blur="validat(2,300,typeDesc)" class="typeDesc inputText"></textarea>
+        <textarea type="text" v-model="typeDesc" @blur="validat(2,300,typeDesc,3)" class="typeDesc inputText"></textarea>
         <span class="tips">{{tips3}}</span>
       </div>
     </div>
@@ -137,31 +137,37 @@
         this.showDialog = false
         this.flag = true
         this.$emit('update-data', this.flag)
+        this.tips1 = ''
+        this.tips2 = ''
+        this.tips3 = ''
       },
-      validat: function (min, max, obj, reg) {
-        if (reg) {
-          if (obj === this.typeId) {
-            let result = reg.test(this.typeId)
-            if (!result) {
-              this.tips1 = '告警类型编码格式不正确,请输入1-5位数字'
-            } else {
-              this.tips1 = ''
-            }
-          }
-        }
+      validat: function (min, max, obj, thisIndex) {
         if (obj.length >= parseInt(min) && obj.length <= parseInt(max)) {
-          if (obj === this.typeName) {
+          if (thisIndex === 2) {
             this.tips2 = ''
           }
-          if (obj === this.typeDesc) {
+          if (thisIndex === 3) {
             this.tips3 = ''
           }
-        } else {
-          if (obj === this.typeName) {
+        } else if (obj.length === 0 || obj.length < parseInt(min) || obj.length > parseInt(max)) {
+          if (thisIndex === 2) {
             this.tips2 = '告警类型名称格式不正确,请输入2-100位'
           }
-          if (obj === this.typeDesc) {
+          if (thisIndex === 3) {
             this.tips3 = '告警描述格式不正确,请输入2-300个字符'
+          }
+        }
+      },
+      validateNum: function (min, max, obj, reg, thisIndex) {
+        if (reg && thisIndex === 1) {
+          if (obj === '' || obj === null) {
+            this.tips1 = '告警类型编码格式不正确,请输入1-5位数字'
+          }
+          let result = reg.test(obj)
+          if (!result) {
+            this.tips1 = '告警类型编码格式不正确,请输入1-5位数字'
+          } else {
+            this.tips1 = ''
           }
         }
       }

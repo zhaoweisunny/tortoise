@@ -36,7 +36,6 @@
   import Operation from './Operation'
   import Pager from 'vue-simple-pager'
   import PacketEdit from '../../template/PacketEdit'
-//  import PhoneUser from './PhoneUser'
   import { default as swal } from 'sweetalert2'
   export default {
     name: 'Packet',
@@ -116,7 +115,8 @@
       },
       searchRetrieval: function (retrieval) { // 搜索
         this.retrieval = retrieval
-        this.getData()
+        this.page = 1
+        this.$router.push({name: 'packet', params: {pageNum: this.page, pageSize: this.pageSize}})
       },
       selectAll: function () {  // 选中所有数据
         let thisData = this.jsonData
@@ -229,28 +229,14 @@
         }
         this.selectId = id
         this.$router.push({name: 'phoneUser', params: {pageNum: 1, pageSize: 10}, query: {ids: this.selectId}})
-//        this.$http.post('/alarmcenter/back/TerminalMobileGroup/selectMobileByGroupId.page',
-//          {}
-//        ).then(
-//          (response) => {
-//            if (response.body.code === 200) {
-//              that.getData()
-//              that.rowId.length = 0
-//              if (that.jsonData.length === 0) {
-//                that.checked = false
-//              }
-//            }
-//          },
-//          (response) => {
-//            swal('fail' + response.body.message)
-//          }
-//        )
       },
       selectBusMessage: function (id) {
         if (id === '') {
           swal('请选择分组')
           return
         }
+        this.selectId = id
+        this.$router.push({name: 'busUser', params: {pageNum: 1, pageSize: 10}, query: {ids: this.selectId}})
       }
     }
   }

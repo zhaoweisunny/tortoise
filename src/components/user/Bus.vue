@@ -1,4 +1,4 @@
-/**
+3/**
 * Created by myao on 16/11/18.
 */
 
@@ -124,7 +124,8 @@
       },
       searchRetrieval: function (retrieval) { // 搜索
         this.retrieval = retrieval
-        this.getData()
+        this.page = 1
+        this.$router.push({name: 'bus', params: {pageNum: this.page, pageSize: this.pageSize}})
       },
       selectAll: function () {  // 选中所有数据
         let thisData = this.jsonData

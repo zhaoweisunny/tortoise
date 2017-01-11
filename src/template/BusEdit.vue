@@ -5,7 +5,10 @@
 <template>
   <div class="BusEdit" v-show="showDialog">
     <div class="wrap">
-      <div class="wHead">{{title}}</div>
+      <div class="wHead">
+        {{title}}
+        <i class="closeBtn" @click="close"></i>
+      </div>
       <div class="wContent">
         <div class="mess">
           <span class="lal">登&nbsp;&nbsp;录&nbsp;&nbsp;名:<i>*</i></span>
@@ -280,7 +283,10 @@
   .BusEdit{padding:20px; text-align:left;
     .modalLayer{width:100%; height:100%; background: rgba(0,0,0,.7); z-index: 100; position: fixed; left: 0; right: 0; top: 0;bottom: 0}
     .wrap{width: 800px; height:auto;background-color: #fff;z-index: 200; position: absolute; left: 50%; top:0;margin-left: -400px;border-radius:5px;}
-    .wHead{width: 100%;height: 50px;line-height: 50px; border-bottom: 1px solid #f1f1f1; text-align: center; color:#fff; font-size: 20px; font-weight: bold; background-color: #949494;border-top-left-radius: 5px; border-top-right-radius: 5px;}
+    .wHead{width: 100%;height: 50px;line-height: 50px; border-bottom: 1px solid #f1f1f1; text-align: center; color:#fff; font-size: 20px; font-weight: bold;
+      background-color: #949494;border-top-left-radius: 5px; border-top-right-radius: 5px; position: relative;
+      .closeBtn{display: block; position: absolute; right:-10px; top:-16px; width:32px; height: 32px;background: url("../assets/images/close2.png") no-repeat center; background-size: 100% ; z-index: 200; cursor: pointer}
+    }
     .wContent{
       padding:20px;
       .mess{

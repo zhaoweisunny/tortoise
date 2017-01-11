@@ -13,19 +13,23 @@
     <div class="rightBox">
       <router-view></router-view>
     </div>
+    <div class="belowBox">
+      <below></below>
+    </div>
   </div>
 </template>
 
 <script>
   import Top from './Top'
   import Left from './Left'
+  import Below from './Below'
   export default {
     name: 'main',
     data () {
       return {
       }
     },
-    components: { Top, Left }
+    components: { Top, Left, Below }
   }
 </script>
 
@@ -38,4 +42,5 @@
   .main {width:@width;height:@height; overflow: @hidden;}
   .leftBox {width:20%; height: @height; overflow: @hidden;display: inline-block; position: fixed; top:90px;left:0}
   .rightBox {width: 80%;height: @height;display:inline-block;text-align: center; position: fixed; top:90px;left:20%;padding: 15px;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
+  .belowBox {width:100%; height: auto; position: fixed; bottom: 0; right:10px; z-index: 1000}
 </style>

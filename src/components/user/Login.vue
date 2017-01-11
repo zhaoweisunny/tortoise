@@ -5,9 +5,9 @@
 <template>
   <div class="login">
     <div class="loginContent">
-      <img src="../../assets/images/login1.png" alt=""/>
+      <img src="../../assets/images/login11.png" alt=""/>
       <div class="loginBox">
-        <h1>贵阳公交后台管理系统</h1>
+        <h1>公交后台管理系统</h1>
         <div class="inputBox clear">
           <img class="userName pull-left" src="../../assets/images/user.png" width="30" alt=""/>
           <input v-model="userName" type="text" class="inputText pull-right userInput" placeholder="请输入用户名"/>

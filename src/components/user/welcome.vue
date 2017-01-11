@@ -6,7 +6,7 @@
   <div class="welcome">
     <div class="wContent">
       <img src="../../assets/images/w.png" alt="">
-      <p>欢迎进入贵阳公交后台管理系统</p>
+      <p>欢迎进入公交后台管理系统</p>
       <img src="../../assets/images/bigBus.png" alt="">
     </div>
   </div>

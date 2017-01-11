@@ -4,7 +4,7 @@
 
 <template>
   <div class="top clear">
-    <img src="../../assets/images/logo.png" alt="" class="logo pull-left">
+    <img src="../../assets/images/logo22.png" alt="" class="logo pull-left">
     <div class="headRight pull-right">
       <a href="javascript:;" class="manager">
         <img src="../../assets/images/userHead.png" alt="" width="20">

@@ -23,10 +23,17 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/alarmcenter': {
-        target: '192.168.0.180:8080',
+        target: 'http://192.168.0.118:8080',   // 这里的http://不能少不能少不能少!!!!!
         changeOrigin: true,
         pathRewrite: {
-          '/^alarmcenter': '/alarmcenter'
+          '^/alarmcenter': '/alarmcenter'
+        }
+      },
+      '/alarmcenter/websocket': {
+        target: 'ws://192.168.0.118:8080',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/alarmcenter/websocket': '/alarmcenter/websocket'
         }
       }
     },
